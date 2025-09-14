@@ -58,7 +58,8 @@ export function ProductGrid() {
               
               <Button
                 size="sm"
-                className="w-full group-hover:bg-primary-hover transition-colors"
+                variant="pos"
+                className="w-full"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleAddToCart(product);

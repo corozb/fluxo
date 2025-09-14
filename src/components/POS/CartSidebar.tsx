@@ -138,7 +138,8 @@ export function CartSidebar() {
 
               <div className="space-y-2">
                 <Button
-                  className="w-full bg-success hover:bg-success-light text-success-foreground"
+                  variant="pos-success"
+                  className="w-full"
                   onClick={() => handlePayment('cash')}
                   disabled={isProcessing}
                 >
@@ -148,7 +149,7 @@ export function CartSidebar() {
                 
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full border-2"
                   onClick={() => handlePayment('card')}
                   disabled={isProcessing}
                 >
@@ -158,7 +159,7 @@ export function CartSidebar() {
                 
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full border-2"
                   onClick={() => handlePayment('digital')}
                   disabled={isProcessing}
                 >

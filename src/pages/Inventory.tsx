@@ -73,7 +73,7 @@ export function Inventory({ onNavigate }: InventoryProps) {
                 Manage your products and track stock levels
               </p>
             </div>
-            <Button onClick={() => setIsFormOpen(true)} className="bg-primary hover:bg-primary-hover">
+            <Button onClick={() => setIsFormOpen(true)} variant="pos" size="lg">
               <Plus className="h-4 w-4 mr-2" />
               Add Product
             </Button>
