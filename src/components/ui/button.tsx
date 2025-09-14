@@ -9,16 +9,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm hover:shadow-md",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm hover:shadow-md",
+        default: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-md hover:shadow-lg transition-all duration-200",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md hover:shadow-lg",
         outline: "border-2 border-border bg-card hover:bg-secondary hover:text-secondary-foreground shadow-sm hover:shadow-md",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm hover:shadow-md",
-        ghost: "hover:bg-secondary hover:text-secondary-foreground",
+        ghost: "hover:bg-secondary hover:text-secondary-foreground transition-colors duration-200",
         link: "text-primary underline-offset-4 hover:underline",
-        success: "bg-success text-success-foreground hover:bg-success-light shadow-sm hover:shadow-md",
-        warning: "bg-warning text-warning-foreground hover:bg-warning/90 shadow-sm hover:shadow-md",
-        pos: "bg-gradient-to-r from-primary to-primary-hover text-primary-foreground hover:shadow-lg hover:scale-105 transition-all duration-200",
-        "pos-success": "bg-gradient-to-r from-success to-success-light text-success-foreground hover:shadow-lg hover:scale-105 transition-all duration-200",
+        success: "bg-success text-success-foreground hover:bg-success-light shadow-md hover:shadow-lg",
+        warning: "bg-warning text-warning-foreground hover:bg-warning/90 shadow-md hover:shadow-lg",
+        accent: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-md hover:shadow-lg transition-all duration-200",
+        pos: "bg-gradient-to-r from-primary to-primary-hover text-primary-foreground hover:shadow-xl hover:scale-105 transition-all duration-300 shadow-lg",
+        "pos-accent": "bg-gradient-to-r from-accent via-accent to-accent/80 text-accent-foreground hover:shadow-xl hover:scale-105 transition-all duration-300 shadow-lg",
+        "pos-success": "bg-gradient-to-r from-success to-success-light text-success-foreground hover:shadow-xl hover:scale-105 transition-all duration-300 shadow-lg",
       },
       size: {
         default: "h-10 px-4 py-2",
