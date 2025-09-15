@@ -2,6 +2,7 @@ import { POSHeader } from '@/components/POS/POSHeader';
 import { SearchBar } from '@/components/POS/SearchBar';
 import { ProductGrid } from '@/components/POS/ProductGrid';
 import { CartSidebar } from '@/components/POS/CartSidebar';
+import { MobileCartButton } from '@/components/POS/MobileCartButton';
 
 interface POSProps {
   onNavigate: (page: 'pos' | 'dashboard' | 'inventory') => void;
@@ -20,7 +21,15 @@ export function POS({ onNavigate }: POSProps) {
           </div>
         </div>
         
-        <CartSidebar />
+        {/* Desktop Cart Sidebar */}
+        <div className="hidden lg:block">
+          <CartSidebar />
+        </div>
+      </div>
+      
+      {/* Mobile Cart Button */}
+      <div className="lg:hidden">
+        <MobileCartButton />
       </div>
     </div>
   );
