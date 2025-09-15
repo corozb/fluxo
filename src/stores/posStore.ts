@@ -16,6 +16,7 @@ export interface Product {
 export interface CartItem extends Product {
   quantity: number;
   subtotal: number;
+  originalPrice: number; // Store original product price
 }
 
 export interface Sale {
@@ -65,6 +66,7 @@ interface POSState {
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
+  updateCartItemPrice: (productId: string, newPrice: number) => void;
   clearCart: () => void;
   
   // Product actions
@@ -151,8 +153,8 @@ const mockSales: Sale[] = [
   {
     id: 'sale-1',
     items: [
-      { ...mockProducts[0], quantity: 2, subtotal: 5.98 },
-      { ...mockProducts[2], quantity: 1, subtotal: 3.49 }
+      { ...mockProducts[0], quantity: 2, subtotal: 5.98, originalPrice: mockProducts[0].price },
+      { ...mockProducts[2], quantity: 1, subtotal: 3.49, originalPrice: mockProducts[2].price }
     ],
     total: 9.47,
     tax: 0.85,
@@ -198,7 +200,8 @@ export const usePOSStore = create<POSState>()(
             const newItem: CartItem = {
               ...product,
               quantity,
-              subtotal: product.price * quantity
+              subtotal: product.price * quantity,
+              originalPrice: product.price
             };
             
             const newCart = [...cart, newItem];
@@ -238,6 +241,31 @@ export const usePOSStore = create<POSState>()(
                 ...item,
                 quantity,
                 subtotal: item.price * quantity
+              };
+            }
+            return item;
+          });
+          
+          const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
+          const tax = subtotal * 0.09;
+          const total = subtotal + tax;
+          
+          set({
+            cart: newCart,
+            cartSubtotal: subtotal,
+            cartTax: tax,
+            cartTotal: total
+          });
+        },
+
+        updateCartItemPrice: (productId, newPrice) => {
+          const { cart } = get();
+          const newCart = cart.map(item => {
+            if (item.id === productId) {
+              return {
+                ...item,
+                price: newPrice,
+                subtotal: newPrice * item.quantity
               };
             }
             return item;

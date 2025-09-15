@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Minus, Plus, Trash2, CreditCard, DollarSign, Smartphone } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Minus, Plus, Trash2, CreditCard, DollarSign, Smartphone, Edit3 } from 'lucide-react';
 import { useState } from 'react';
 
 export function MobileCartContent() {
@@ -14,12 +15,15 @@ export function MobileCartContent() {
     cartTax,
     cartTotal,
     updateCartQuantity,
+    updateCartItemPrice,
     removeFromCart,
     completeSale,
     clearCart
   } = usePOSStore();
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const [editingPrice, setEditingPrice] = useState<string | null>(null);
+  const [tempPrice, setTempPrice] = useState<string>('');
 
   const handlePayment = async (method: 'cash' | 'card' | 'digital') => {
     setIsProcessing(true);
@@ -41,6 +45,25 @@ export function MobileCartContent() {
     } else {
       updateCartQuantity(productId, newQuantity);
     }
+  };
+
+  const startEditingPrice = (productId: string, currentPrice: number) => {
+    setEditingPrice(productId);
+    setTempPrice(currentPrice.toFixed(2));
+  };
+
+  const savePrice = (productId: string) => {
+    const price = parseFloat(tempPrice);
+    if (!isNaN(price) && price > 0) {
+      updateCartItemPrice(productId, price);
+    }
+    setEditingPrice(null);
+    setTempPrice('');
+  };
+
+  const cancelEdit = () => {
+    setEditingPrice(null);
+    setTempPrice('');
   };
 
   return (
@@ -71,9 +94,53 @@ export function MobileCartContent() {
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <h4 className="font-medium text-base mb-1">{item.name}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            ${item.price.toFixed(2)} each
-                          </p>
+                          {editingPrice === item.id ? (
+                            <div className="flex items-center space-x-2 mb-2">
+                              <span className="text-sm">Price: $</span>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={tempPrice}
+                                onChange={(e) => setTempPrice(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') savePrice(item.id);
+                                  if (e.key === 'Escape') cancelEdit();
+                                }}
+                                className="h-8 w-20 text-sm"
+                                autoFocus
+                              />
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => savePrice(item.id)}
+                                className="h-8 w-8 p-0 text-green-600"
+                              >
+                                ✓
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={cancelEdit}
+                                className="h-8 w-8 p-0 text-red-600"
+                              >
+                                ✕
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center space-x-2">
+                              <p className="text-sm text-muted-foreground">
+                                ${item.price.toFixed(2)} each
+                              </p>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => startEditingPrice(item.id, item.price)}
+                                className="h-6 w-6 p-0 text-muted-foreground hover:text-primary"
+                              >
+                                <Edit3 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                         <Button
                           variant="ghost"
