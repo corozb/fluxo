@@ -17,6 +17,7 @@ export interface CartItem extends Product {
   quantity: number;
   subtotal: number;
   originalPrice: number; // Store original product price
+  unitPrices: number[]; // Store individual prices for each unit
 }
 
 export interface Sale {
@@ -67,6 +68,7 @@ interface POSState {
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
   updateCartItemPrice: (productId: string, newPrice: number) => void;
+  updateCartUnitPrice: (productId: string, unitIndex: number, newPrice: number) => void;
   clearCart: () => void;
   
   // Product actions
@@ -153,8 +155,8 @@ const mockSales: Sale[] = [
   {
     id: 'sale-1',
     items: [
-      { ...mockProducts[0], quantity: 2, subtotal: 5.98, originalPrice: mockProducts[0].price },
-      { ...mockProducts[2], quantity: 1, subtotal: 3.49, originalPrice: mockProducts[2].price }
+      { ...mockProducts[0], quantity: 2, subtotal: 5.98, originalPrice: mockProducts[0].price, unitPrices: [mockProducts[0].price, mockProducts[0].price] },
+      { ...mockProducts[2], quantity: 1, subtotal: 3.49, originalPrice: mockProducts[2].price, unitPrices: [mockProducts[2].price] }
     ],
     total: 9.47,
     tax: 0.85,
@@ -190,13 +192,45 @@ export const usePOSStore = create<POSState>()(
           const existingItem = cart.find(item => item.id === product.id);
           
           if (existingItem) {
-            get().updateCartQuantity(product.id, existingItem.quantity + quantity);
+            // Add new units with original price
+            const newUnitPrices = [...existingItem.unitPrices];
+            for (let i = 0; i < quantity; i++) {
+              newUnitPrices.push(product.price);
+            }
+            const newQuantity = existingItem.quantity + quantity;
+            const newSubtotal = newUnitPrices.reduce((sum, price) => sum + price, 0);
+            
+            const newCart = cart.map(item => {
+              if (item.id === product.id) {
+                return {
+                  ...item,
+                  quantity: newQuantity,
+                  subtotal: newSubtotal,
+                  unitPrices: newUnitPrices,
+                  price: newSubtotal / newQuantity // Average price for display
+                };
+              }
+              return item;
+            });
+            
+            const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
+            const tax = subtotal * 0.09;
+            const total = subtotal + tax;
+            
+            set({
+              cart: newCart,
+              cartSubtotal: subtotal,
+              cartTax: tax,
+              cartTotal: total
+            });
           } else {
+            const unitPrices = Array(quantity).fill(product.price);
             const newItem: CartItem = {
               ...product,
               quantity,
               subtotal: product.price * quantity,
-              originalPrice: product.price
+              originalPrice: product.price,
+              unitPrices
             };
             
             const newCart = [...cart, newItem];
@@ -232,10 +266,27 @@ export const usePOSStore = create<POSState>()(
           const { cart } = get();
           const newCart = cart.map(item => {
             if (item.id === productId) {
+              const currentQuantity = item.quantity;
+              let newUnitPrices = [...item.unitPrices];
+              
+              if (quantity > currentQuantity) {
+                // Adding units - use original price for new units
+                for (let i = 0; i < quantity - currentQuantity; i++) {
+                  newUnitPrices.push(item.originalPrice);
+                }
+              } else if (quantity < currentQuantity) {
+                // Removing units - remove from the end
+                newUnitPrices = newUnitPrices.slice(0, quantity);
+              }
+              
+              const newSubtotal = newUnitPrices.reduce((sum, price) => sum + price, 0);
+              
               return {
                 ...item,
                 quantity,
-                subtotal: item.price * quantity
+                subtotal: newSubtotal,
+                unitPrices: newUnitPrices,
+                price: newSubtotal / quantity // Average price for display
               };
             }
             return item;
@@ -257,10 +308,41 @@ export const usePOSStore = create<POSState>()(
           const { cart } = get();
           const newCart = cart.map(item => {
             if (item.id === productId) {
+              const newUnitPrices = Array(item.quantity).fill(newPrice);
               return {
                 ...item,
                 price: newPrice,
-                subtotal: newPrice * item.quantity
+                subtotal: newPrice * item.quantity,
+                unitPrices: newUnitPrices
+              };
+            }
+            return item;
+          });
+          
+          const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
+          const tax = subtotal * 0.09;
+          const total = subtotal + tax;
+          
+          set({
+            cart: newCart,
+            cartSubtotal: subtotal,
+            cartTax: tax,
+            cartTotal: total
+          });
+        },
+
+        updateCartUnitPrice: (productId, unitIndex, newPrice) => {
+          const { cart } = get();
+          const newCart = cart.map(item => {
+            if (item.id === productId && unitIndex >= 0 && unitIndex < item.unitPrices.length) {
+              const newUnitPrices = [...item.unitPrices];
+              newUnitPrices[unitIndex] = newPrice;
+              const newSubtotal = newUnitPrices.reduce((sum, price) => sum + price, 0);
+              return {
+                ...item,
+                subtotal: newSubtotal,
+                unitPrices: newUnitPrices,
+                price: newSubtotal / item.quantity // Average price for display
               };
             }
             return item;
