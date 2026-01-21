@@ -179,12 +179,7 @@ export const usePOSStore = create<POSState>()(
         cartSubtotal: 0,
         sales: mockSales,
         todaySales: [],
-        currentUser: {
-          id: 'user-1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          role: 'admin'
-        },
+        currentUser: null,
         searchQuery: '',
         selectedCategory: 'All',
         isCheckoutOpen: false,
