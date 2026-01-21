@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { Minus, Plus, Trash2, CreditCard, DollarSign, Smartphone, Edit3 } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Minus, Plus, Trash2, CreditCard, DollarSign, Smartphone, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 
 export function CartSidebar() {
@@ -14,28 +15,28 @@ export function CartSidebar() {
     cartSubtotal,
     cartTax,
     cartTotal,
+    currentUser,
     updateCartQuantity,
-    updateCartItemPrice,
+    updateCartUnitPrice,
     removeFromCart,
     completeSale,
     clearCart
   } = usePOSStore();
 
   const [isProcessing, setIsProcessing] = useState(false);
-  const [editingPrice, setEditingPrice] = useState<string | null>(null);
+  const [editingUnit, setEditingUnit] = useState<{ productId: string; unitIndex: number } | null>(null);
   const [tempPrice, setTempPrice] = useState<string>('');
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  const isAdmin = currentUser?.role === 'admin';
 
   const handlePayment = async (method: 'cash' | 'card' | 'digital') => {
     setIsProcessing(true);
-    
-    // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
     const saleId = completeSale(method);
     setIsProcessing(false);
     
     if (saleId) {
-      // Show success toast or redirect to receipt
       console.log(`Sale completed: ${saleId}`);
     }
   };
@@ -48,30 +49,41 @@ export function CartSidebar() {
     }
   };
 
-  const startEditingPrice = (productId: string, currentPrice: number) => {
-    setEditingPrice(productId);
+  const startEditingUnit = (productId: string, unitIndex: number, currentPrice: number) => {
+    setEditingUnit({ productId, unitIndex });
     setTempPrice(currentPrice.toFixed(2));
   };
 
-  const savePrice = (productId: string) => {
+  const saveUnitPrice = () => {
+    if (!editingUnit) return;
     const price = parseFloat(tempPrice);
     if (!isNaN(price) && price > 0) {
-      updateCartItemPrice(productId, price);
+      updateCartUnitPrice(editingUnit.productId, editingUnit.unitIndex, price);
     }
-    setEditingPrice(null);
+    setEditingUnit(null);
     setTempPrice('');
   };
 
   const cancelEdit = () => {
-    setEditingPrice(null);
+    setEditingUnit(null);
     setTempPrice('');
+  };
+
+  const toggleExpanded = (productId: string) => {
+    const newExpanded = new Set(expandedItems);
+    if (newExpanded.has(productId)) {
+      newExpanded.delete(productId);
+    } else {
+      newExpanded.add(productId);
+    }
+    setExpandedItems(newExpanded);
   };
 
   return (
     <div className="w-80 border-l border-border bg-card flex flex-col h-full">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between">
-          <span>Cart</span>
+          <span>Carrito</span>
           <Badge variant="secondary">{cart.length} items</Badge>
         </CardTitle>
       </CardHeader>
@@ -81,8 +93,8 @@ export function CartSidebar() {
           <div className="flex-1 flex items-center justify-center text-center">
             <div className="text-muted-foreground">
               <div className="text-4xl mb-2">🛒</div>
-              <p className="text-sm">Your cart is empty</p>
-              <p className="text-xs">Add items to get started</p>
+              <p className="text-sm">Tu carrito está vacío</p>
+              <p className="text-xs">Agrega productos para comenzar</p>
             </div>
           </div>
         ) : (
@@ -130,7 +142,96 @@ export function CartSidebar() {
                         </div>
                         
                         <div className="text-right">
-                          {editingPrice === item.id ? (
+                          <p className="text-sm font-medium">${item.subtotal.toFixed(2)}</p>
+                          <p className="text-xs text-muted-foreground">
+                            ${(item.subtotal / item.quantity).toFixed(2)} c/u prom.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Unit prices section - only for admin and multiple units */}
+                      {isAdmin && item.quantity > 1 && (
+                        <Collapsible 
+                          open={expandedItems.has(item.id)}
+                          onOpenChange={() => toggleExpanded(item.id)}
+                          className="mt-2"
+                        >
+                          <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="w-full h-6 text-xs">
+                              {expandedItems.has(item.id) ? (
+                                <>
+                                  <ChevronUp className="h-3 w-3 mr-1" />
+                                  Ocultar precios por unidad
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="h-3 w-3 mr-1" />
+                                  Ver precios por unidad
+                                </>
+                              )}
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="mt-2">
+                            <div className="space-y-1 p-2 bg-background rounded border">
+                              {item.unitPrices.map((unitPrice, index) => (
+                                <div key={index} className="flex items-center justify-between text-xs">
+                                  <span className="text-muted-foreground">Unidad {index + 1}:</span>
+                                  {editingUnit?.productId === item.id && editingUnit?.unitIndex === index ? (
+                                    <div className="flex items-center space-x-1">
+                                      <span>$</span>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        value={tempPrice}
+                                        onChange={(e) => setTempPrice(e.target.value)}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') saveUnitPrice();
+                                          if (e.key === 'Escape') cancelEdit();
+                                        }}
+                                        className="h-5 w-14 text-xs p-1"
+                                        autoFocus
+                                      />
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={saveUnitPrice}
+                                        className="h-5 w-5 p-0 text-green-600"
+                                      >
+                                        ✓
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={cancelEdit}
+                                        className="h-5 w-5 p-0 text-destructive"
+                                      >
+                                        ✕
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center space-x-1">
+                                      <span className="font-medium">${unitPrice.toFixed(2)}</span>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => startEditingUnit(item.id, index, unitPrice)}
+                                        className="h-4 w-4 p-0 text-muted-foreground hover:text-primary"
+                                      >
+                                        <Edit3 className="h-2.5 w-2.5" />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      )}
+
+                      {/* Single unit price edit - only for admin */}
+                      {isAdmin && item.quantity === 1 && (
+                        <div className="mt-2 flex items-center justify-end">
+                          {editingUnit?.productId === item.id && editingUnit?.unitIndex === 0 ? (
                             <div className="flex items-center space-x-1">
                               <span className="text-xs">$</span>
                               <Input
@@ -139,43 +240,42 @@ export function CartSidebar() {
                                 value={tempPrice}
                                 onChange={(e) => setTempPrice(e.target.value)}
                                 onKeyDown={(e) => {
-                                  if (e.key === 'Enter') savePrice(item.id);
+                                  if (e.key === 'Enter') saveUnitPrice();
                                   if (e.key === 'Escape') cancelEdit();
                                 }}
-                                className="h-6 w-16 text-xs p-1"
+                                className="h-5 w-14 text-xs p-1"
                                 autoFocus
                               />
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => savePrice(item.id)}
-                                className="h-6 w-6 p-0 text-green-600"
+                                onClick={saveUnitPrice}
+                                className="h-5 w-5 p-0 text-green-600"
                               >
                                 ✓
                               </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={cancelEdit}
+                                className="h-5 w-5 p-0 text-destructive"
+                              >
+                                ✕
+                              </Button>
                             </div>
                           ) : (
-                            <div className="flex items-center space-x-1">
-                              <div>
-                                <p className="text-sm font-medium">${item.subtotal.toFixed(2)}</p>
-                                <div className="flex items-center space-x-1">
-                                  <p className="text-xs text-muted-foreground">
-                                    ${item.price.toFixed(2)} each
-                                  </p>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => startEditingPrice(item.id, item.price)}
-                                    className="h-4 w-4 p-0 text-muted-foreground hover:text-primary"
-                                  >
-                                    <Edit3 className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => startEditingUnit(item.id, 0, item.unitPrices[0])}
+                              className="h-5 text-xs text-muted-foreground hover:text-primary"
+                            >
+                              <Edit3 className="h-3 w-3 mr-1" />
+                              Editar precio
+                            </Button>
                           )}
                         </div>
-                      </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
@@ -189,7 +289,7 @@ export function CartSidebar() {
                   <span>${cartSubtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Tax (9%)</span>
+                  <span>Impuesto (9%)</span>
                   <span>${cartTax.toFixed(2)}</span>
                 </div>
                 <Separator />
@@ -207,7 +307,7 @@ export function CartSidebar() {
                   disabled={isProcessing}
                 >
                   <DollarSign className="h-4 w-4 mr-2" />
-                  {isProcessing ? 'Processing...' : 'Pay with Cash'}
+                  {isProcessing ? 'Procesando...' : 'Pagar en Efectivo'}
                 </Button>
                 
                 <Button
@@ -217,7 +317,7 @@ export function CartSidebar() {
                   disabled={isProcessing}
                 >
                   <CreditCard className="h-4 w-4 mr-2" />
-                  Pay with Card
+                  Pagar con Tarjeta
                 </Button>
                 
                 <Button
@@ -227,7 +327,7 @@ export function CartSidebar() {
                   disabled={isProcessing}
                 >
                   <Smartphone className="h-4 w-4 mr-2" />
-                  Digital Payment
+                  Pago Digital
                 </Button>
               </div>
 
@@ -237,7 +337,7 @@ export function CartSidebar() {
                 onClick={clearCart}
                 disabled={isProcessing}
               >
-                Clear Cart
+                Vaciar Carrito
               </Button>
             </div>
           </>
