@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePOSStore, Product } from '@/stores/posStore';
+import { useCategoriesStore } from '@/stores/categoriesStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,26 +25,50 @@ import { useToast } from '@/hooks/use-toast';
 interface ProductFormProps {
   isOpen: boolean;
   onClose: () => void;
-  product?: Product;
+  product?: Product | null;
 }
 
 export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
-  const { addProduct, updateProduct, products } = usePOSStore();
+  const { addProduct, updateProduct } = usePOSStore();
+  const { categories } = useCategoriesStore();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
-    name: product?.name || '',
-    price: product?.price?.toString() || '',
-    category: product?.category || '',
-    stock: product?.stock?.toString() || '',
-    lowStockThreshold: product?.lowStockThreshold?.toString() || '10',
-    description: product?.description || '',
-    barcode: product?.barcode || ''
+    name: '',
+    price: '',
+    cost: '',
+    category: '',
+    stock: '',
+    lowStockThreshold: '10',
+    description: '',
+    barcode: ''
   });
 
-  const categories = Array.from(new Set(products.map(p => p.category))).concat([
-    'Coffee', 'Tea', 'Pastry', 'Sandwich', 'Salad', 'Beverage', 'Snack'
-  ]);
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        name: product.name || '',
+        price: product.price?.toString() || '',
+        cost: product.cost?.toString() || '',
+        category: product.category || '',
+        stock: product.stock?.toString() || '',
+        lowStockThreshold: product.lowStockThreshold?.toString() || '10',
+        description: product.description || '',
+        barcode: product.barcode || ''
+      });
+    } else {
+      setFormData({
+        name: '',
+        price: '',
+        cost: '',
+        category: '',
+        stock: '',
+        lowStockThreshold: '10',
+        description: '',
+        barcode: ''
+      });
+    }
+  }, [product, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +76,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
     if (!formData.name || !formData.price || !formData.category || !formData.stock) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Por favor complete todos los campos requeridos",
         variant: "destructive"
       });
       return;
@@ -60,6 +85,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
     const productData = {
       name: formData.name,
       price: parseFloat(formData.price),
+      cost: formData.cost ? parseFloat(formData.cost) : undefined,
       category: formData.category,
       stock: parseInt(formData.stock),
       lowStockThreshold: parseInt(formData.lowStockThreshold),
@@ -70,27 +96,18 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
     if (product) {
       updateProduct(product.id, productData);
       toast({
-        title: "Success",
-        description: "Product updated successfully"
+        title: "Éxito",
+        description: "Producto actualizado correctamente"
       });
     } else {
       addProduct(productData);
       toast({
-        title: "Success",
-        description: "Product added successfully"
+        title: "Éxito",
+        description: "Producto agregado correctamente"
       });
     }
 
     onClose();
-    setFormData({
-      name: '',
-      price: '',
-      category: '',
-      stock: '',
-      lowStockThreshold: '10',
-      description: '',
-      barcode: ''
-    });
   };
 
   const handleChange = (field: string, value: string) => {
@@ -99,21 +116,21 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>
-              {product ? 'Edit Product' : 'Add New Product'}
+              {product ? 'Editar Producto' : 'Agregar Nuevo Producto'}
             </DialogTitle>
             <DialogDescription>
-              {product ? 'Update product information' : 'Create a new product for your inventory'}
+              {product ? 'Actualizar información del producto' : 'Crear un nuevo producto para tu inventario'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
-                Name *
+                Nombre *
               </Label>
               <Input
                 id="name"
@@ -126,7 +143,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="price" className="text-right">
-                Price *
+                Precio *
               </Label>
               <Input
                 id="price"
@@ -136,20 +153,37 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
                 value={formData.price}
                 onChange={(e) => handleChange('price', e.target.value)}
                 className="col-span-3"
+                placeholder="0.00"
                 required
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="cost" className="text-right">
+                Costo
+              </Label>
+              <Input
+                id="cost"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.cost}
+                onChange={(e) => handleChange('cost', e.target.value)}
+                className="col-span-3"
+                placeholder="0.00 (para calcular ganancia)"
+              />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="category" className="text-right">
-                Category *
+                Categoría *
               </Label>
               <Select
                 value={formData.category}
                 onValueChange={(value) => handleChange('category', value)}
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder="Seleccionar categoría" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -178,7 +212,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="lowStockThreshold" className="text-right">
-                Low Stock
+                Alerta Stock
               </Label>
               <Input
                 id="lowStockThreshold"
@@ -192,7 +226,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="barcode" className="text-right">
-                Barcode
+                Código de Barras
               </Label>
               <Input
                 id="barcode"
@@ -204,7 +238,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="description" className="text-right">
-                Description
+                Descripción
               </Label>
               <Textarea
                 id="description"
@@ -218,10 +252,10 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+              Cancelar
             </Button>
-            <Button type="submit" className="bg-primary hover:bg-primary-hover">
-              {product ? 'Update' : 'Add'} Product
+            <Button type="submit" variant="pos">
+              {product ? 'Actualizar' : 'Agregar'} Producto
             </Button>
           </DialogFooter>
         </form>
