@@ -54,6 +54,7 @@ interface POSState {
   // Sales
   sales: Sale[];
   todaySales: Sale[];
+  saleDate: Date;
   
   // User
   currentUser: User | null;
@@ -83,6 +84,7 @@ interface POSState {
   filterProducts: () => void;
   
   // Sales
+  setSaleDate: (date: Date) => void;
   completeSale: (paymentMethod: 'cash' | 'card' | 'digital', customerId?: string) => string;
   
   // User
@@ -181,6 +183,7 @@ export const usePOSStore = create<POSState>()(
         cartSubtotal: 0,
         sales: mockSales,
         todaySales: [],
+        saleDate: new Date(),
         currentUser: null,
         searchQuery: '',
         selectedCategory: 'All',
@@ -432,8 +435,12 @@ export const usePOSStore = create<POSState>()(
         },
 
         // Sales
+        setSaleDate: (date) => {
+          set({ saleDate: date });
+        },
+
         completeSale: (paymentMethod, customerId) => {
-          const { cart, cartTotal, cartTax, cartDiscount, currentUser, sales } = get();
+          const { cart, cartTotal, cartTax, cartDiscount, currentUser, saleDate } = get();
           
           if (cart.length === 0) return '';
           
@@ -445,7 +452,7 @@ export const usePOSStore = create<POSState>()(
             tax: cartTax,
             discount: cartDiscount,
             paymentMethod,
-            timestamp: new Date(),
+            timestamp: saleDate,
             cashierId: currentUser?.id || '',
             customerId
           };
