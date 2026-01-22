@@ -18,7 +18,7 @@ export function SearchBar() {
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
   return (
-    <div className="border-b border-border bg-pos-header p-4">
+    <div className="bg-pos-header">
       <div className="flex items-center space-x-4 mb-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
