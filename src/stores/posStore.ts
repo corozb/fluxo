@@ -5,6 +5,7 @@ export interface Product {
   id: string;
   name: string;
   price: number;
+  cost?: number;
   category: string;
   image?: string;
   stock: number;
@@ -101,6 +102,7 @@ const mockProducts: Product[] = [
     id: '1',
     name: 'Espresso',
     price: 2.99,
+    cost: 0.80,
     category: 'Coffee',
     stock: 50,
     lowStockThreshold: 10,
@@ -111,6 +113,7 @@ const mockProducts: Product[] = [
     id: '2',
     name: 'Cappuccino',
     price: 4.99,
+    cost: 1.50,
     category: 'Coffee',
     stock: 45,
     lowStockThreshold: 10,
@@ -121,6 +124,7 @@ const mockProducts: Product[] = [
     id: '3',
     name: 'Croissant',
     price: 3.49,
+    cost: 1.20,
     category: 'Pastry',
     stock: 25,
     lowStockThreshold: 5,
@@ -131,6 +135,7 @@ const mockProducts: Product[] = [
     id: '4',
     name: 'Latte',
     price: 5.49,
+    cost: 1.80,
     category: 'Coffee',
     stock: 40,
     lowStockThreshold: 10,
@@ -141,6 +146,7 @@ const mockProducts: Product[] = [
     id: '5',
     name: 'Blueberry Muffin',
     price: 2.99,
+    cost: 0.90,
     category: 'Pastry',
     stock: 15,
     lowStockThreshold: 5,
@@ -151,6 +157,7 @@ const mockProducts: Product[] = [
     id: '6',
     name: 'Green Tea',
     price: 3.99,
+    cost: 0.60,
     category: 'Tea',
     stock: 30,
     lowStockThreshold: 8,
@@ -158,6 +165,15 @@ const mockProducts: Product[] = [
     barcode: '7501234567895'
   }
 ];
+
+// Categories store
+interface CategoriesState {
+  categories: string[];
+  addCategory: (category: string) => void;
+  deleteCategory: (category: string) => void;
+}
+
+const defaultCategories = ['Coffee', 'Tea', 'Pastry', 'Sandwich', 'Salad', 'Beverage', 'Snack'];
 
 const mockSales: Sale[] = [
   {
