@@ -104,7 +104,8 @@ const mockProducts: Product[] = [
     category: 'Coffee',
     stock: 50,
     lowStockThreshold: 10,
-    description: 'Rich, bold espresso shot'
+    description: 'Rich, bold espresso shot',
+    barcode: '7501234567890'
   },
   {
     id: '2',
@@ -113,7 +114,8 @@ const mockProducts: Product[] = [
     category: 'Coffee',
     stock: 45,
     lowStockThreshold: 10,
-    description: 'Creamy cappuccino with steamed milk'
+    description: 'Creamy cappuccino with steamed milk',
+    barcode: '7501234567891'
   },
   {
     id: '3',
@@ -122,7 +124,8 @@ const mockProducts: Product[] = [
     category: 'Pastry',
     stock: 25,
     lowStockThreshold: 5,
-    description: 'Buttery, flaky croissant'
+    description: 'Buttery, flaky croissant',
+    barcode: '7501234567892'
   },
   {
     id: '4',
@@ -131,7 +134,8 @@ const mockProducts: Product[] = [
     category: 'Coffee',
     stock: 40,
     lowStockThreshold: 10,
-    description: 'Smooth latte with steamed milk'
+    description: 'Smooth latte with steamed milk',
+    barcode: '7501234567893'
   },
   {
     id: '5',
@@ -140,7 +144,8 @@ const mockProducts: Product[] = [
     category: 'Pastry',
     stock: 15,
     lowStockThreshold: 5,
-    description: 'Fresh blueberry muffin'
+    description: 'Fresh blueberry muffin',
+    barcode: '7501234567894'
   },
   {
     id: '6',
@@ -149,7 +154,8 @@ const mockProducts: Product[] = [
     category: 'Tea',
     stock: 30,
     lowStockThreshold: 8,
-    description: 'Premium green tea'
+    description: 'Premium green tea',
+    barcode: '7501234567895'
   }
 ];
 
@@ -425,9 +431,11 @@ export const usePOSStore = create<POSState>()(
           }
 
           if (searchQuery) {
+            const query = searchQuery.toLowerCase();
             filtered = filtered.filter(product =>
-              product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              product.category.toLowerCase().includes(searchQuery.toLowerCase())
+              product.name.toLowerCase().includes(query) ||
+              product.category.toLowerCase().includes(query) ||
+              (product.barcode && product.barcode.toLowerCase().includes(query))
             );
           }
 

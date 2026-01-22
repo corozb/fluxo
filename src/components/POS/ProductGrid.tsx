@@ -2,7 +2,7 @@ import { usePOSStore } from '@/stores/posStore';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, AlertTriangle } from 'lucide-react';
+import { Plus, AlertTriangle, Barcode } from 'lucide-react';
 
 export function ProductGrid() {
   const { filteredProducts, addToCart } = usePOSStore();
@@ -42,7 +42,7 @@ export function ProductGrid() {
                     )}
                   </div>
                   
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between mb-1">
                     <span className="text-base font-bold text-primary">
                       ${product.price.toFixed(2)}
                     </span>
@@ -50,6 +50,13 @@ export function ProductGrid() {
                       Stock: {product.stock}
                     </span>
                   </div>
+                  
+                  {product.barcode && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Barcode className="h-3 w-3" />
+                      <span className="truncate">{product.barcode}</span>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Add Button */}
@@ -100,6 +107,13 @@ export function ProductGrid() {
                 <p className="text-sm text-muted-foreground line-clamp-2">
                   {product.description}
                 </p>
+                
+                {product.barcode && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Barcode className="h-3 w-3" />
+                    <span className="truncate">{product.barcode}</span>
+                  </div>
+                )}
                 
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">

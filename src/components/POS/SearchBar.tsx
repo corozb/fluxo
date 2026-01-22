@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { usePOSStore } from '@/stores/posStore';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, X } from 'lucide-react';
+import { Search, X, Camera } from 'lucide-react';
+import { BarcodeScanner } from './BarcodeScanner';
 
 export function SearchBar() {
   const {
@@ -14,16 +16,18 @@ export function SearchBar() {
     setSelectedCategory
   } = usePOSStore();
 
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+
   // Get unique categories
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
   return (
     <div className="bg-pos-header">
-      <div className="flex items-center space-x-4 mb-4">
+      <div className="flex items-center space-x-2 mb-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Search products..."
+            placeholder="Buscar por nombre o código de barras..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -39,6 +43,14 @@ export function SearchBar() {
             </Button>
           )}
         </div>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsScannerOpen(true)}
+          title="Escanear código de barras"
+        >
+          <Camera className="h-4 w-4" />
+        </Button>
       </div>
 
       <ScrollArea className="w-full">
@@ -55,6 +67,11 @@ export function SearchBar() {
           ))}
         </div>
       </ScrollArea>
+
+      <BarcodeScanner 
+        isOpen={isScannerOpen} 
+        onClose={() => setIsScannerOpen(false)} 
+      />
     </div>
   );
 }
