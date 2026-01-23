@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { BarChart3, Settings, LogOut, User } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { SaleDatePicker } from '@/components/POS/SaleDatePicker';
 
 interface POSHeaderProps {
   onNavigate: (page: 'pos' | 'dashboard' | 'inventory') => void;
@@ -26,7 +27,7 @@ export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
   };
 
   return (
-    <header className="border-b border-border bg-pos-header px-6 py-3 flex items-center justify-between">
+    <header className="glass-header px-6 py-3 flex items-center justify-between">
       <div className="flex items-center space-x-6">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -64,13 +65,8 @@ export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
 
       <div className="flex items-center space-x-2 sm:space-x-4">
         <ThemeToggle />
-        <div className="text-right hidden sm:block">
-          <p className="text-sm font-medium text-card-foreground">
-            {new Date().toLocaleDateString()}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {new Date().toLocaleTimeString()}
-          </p>
+        <div className="text-right">
+          {currentPage === 'pos' && <SaleDatePicker />}
         </div>
 
         <DropdownMenu>

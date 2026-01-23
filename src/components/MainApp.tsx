@@ -8,7 +8,7 @@ import { MobileBottomNav } from '@/components/MobileBottomNav';
 
 export function MainApp() {
   const [currentPage, setCurrentPage] = useState<'pos' | 'dashboard' | 'inventory'>('pos');
-  const { currentUser } = usePOSStore();
+  const { currentUser, setSaleDate } = usePOSStore();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -20,6 +20,9 @@ export function MainApp() {
 
   const handleNavigate = (page: 'pos' | 'dashboard' | 'inventory') => {
     setCurrentPage(page);
+    if (page === 'pos') {
+      setSaleDate(new Date());
+    }
   };
 
   const handleLogin = () => {

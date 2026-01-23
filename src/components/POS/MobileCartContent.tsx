@@ -1,5 +1,6 @@
 import { usePOSStore } from '@/stores/posStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -88,7 +89,7 @@ export function MobileCartContent() {
         </CardTitle>
       </CardHeader>
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         {cart.length === 0 ? (
           <div className="flex-1 flex items-center justify-center text-center">
             <div className="text-muted-foreground">
@@ -108,7 +109,7 @@ export function MobileCartContent() {
                         <div className="flex-1">
                           <h4 className="font-medium text-base mb-1">{item.name}</h4>
                           <p className="text-sm text-muted-foreground">
-                            ${(item.subtotal / item.quantity).toFixed(2)} c/u promedio
+                            {formatNumber(item.subtotal / item.quantity, '$')} c/u promedio
                           </p>
                         </div>
                         <Button
@@ -148,7 +149,7 @@ export function MobileCartContent() {
                         
                         <div className="text-right">
                           <p className="text-lg font-bold text-primary">
-                            ${item.subtotal.toFixed(2)}
+                            {formatNumber(item.subtotal, '$')}
                           </p>
                         </div>
                       </div>
@@ -214,7 +215,7 @@ export function MobileCartContent() {
                                     </div>
                                   ) : (
                                     <div className="flex items-center space-x-2">
-                                      <span className="font-medium text-sm">${unitPrice.toFixed(2)}</span>
+                                      <span className="font-medium text-sm">{formatNumber(unitPrice, '$')}</span>
                                       <Button
                                         variant="ghost"
                                         size="sm"
@@ -290,16 +291,16 @@ export function MobileCartContent() {
               <div className="space-y-3">
                 <div className="flex justify-between text-base">
                   <span>Subtotal</span>
-                  <span>${cartSubtotal.toFixed(2)}</span>
+                  <span>{formatNumber(cartSubtotal, '$')}</span>
                 </div>
                 <div className="flex justify-between text-base">
                   <span>Impuesto (9%)</span>
-                  <span>${cartTax.toFixed(2)}</span>
+                  <span>{formatNumber(cartTax, '$')}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold text-xl">
                   <span>Total</span>
-                  <span className="text-pos-total">${cartTotal.toFixed(2)}</span>
+                  <span className="text-pos-total">{formatNumber(cartTotal, '$')}</span>
                 </div>
               </div>
 

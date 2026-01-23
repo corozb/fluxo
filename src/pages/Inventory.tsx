@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { formatNumber } from '@/lib/utils';
 import { usePOSStore } from '@/stores/posStore';
 import { POSHeader } from '@/components/POS/POSHeader';
 import { ProductForm } from '@/components/Inventory/ProductForm';
@@ -66,34 +67,48 @@ export function Inventory({ onNavigate }: InventoryProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       <POSHeader onNavigate={onNavigate} currentPage="inventory" />
       
+      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6 space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Gestión de Inventario</h2>
+            <p className="text-muted-foreground">
+              Administra tus productos y niveles de stock
+            </p>
+          </div>
+          <div className="flex gap-2">
+            {isAdmin && (
+              <Button onClick={() => setIsCategoryManagerOpen(true)} variant="outline">
+                <Tag className="h-4 w-4 mr-2" />
+                Categorías
+              </Button>
+            )}
+            <Button onClick={() => setIsFormOpen(true)} variant="pos" size="lg">
+              <Plus className="h-4 w-4 mr-2" />
+              Agregar Producto
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Buscar productos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="flex-1 overflow-auto p-6">
         <div className="space-y-6">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight">Gestión de Inventario</h2>
-              <p className="text-muted-foreground">
-                Administra tus productos y niveles de stock
-              </p>
-            </div>
-            <div className="flex gap-2">
-              {isAdmin && (
-                <Button onClick={() => setIsCategoryManagerOpen(true)} variant="outline">
-                  <Tag className="h-4 w-4 mr-2" />
-                  Categorías
-                </Button>
-              )}
-              <Button onClick={() => setIsFormOpen(true)} variant="pos" size="lg">
-                <Plus className="h-4 w-4 mr-2" />
-                Agregar Producto
-              </Button>
-            </div>
-          </div>
-
           {lowStockProducts.length > 0 && (
-            <Card className="border-warning">
+            <Card className="">
               <CardHeader>
                 <CardTitle className="flex items-center text-warning">
                   <AlertTriangle className="h-5 w-5 mr-2" />
@@ -114,18 +129,6 @@ export function Inventory({ onNavigate }: InventoryProps) {
               </CardContent>
             </Card>
           )}
-
-          <div className="flex items-center space-x-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Buscar productos..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
 
           <Card>
             <CardContent className="p-0">
@@ -164,10 +167,10 @@ export function Inventory({ onNavigate }: InventoryProps) {
                           <Badge variant="outline">{product.category}</Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
-                          {product.cost ? `$${product.cost.toFixed(2)}` : '-'}
+                          {product.cost ? formatNumber(product.cost, '$') : '-'}
                         </TableCell>
                         <TableCell className="font-medium">
-                          ${product.price.toFixed(2)}
+                          {formatNumber(product.price, '$')}
                         </TableCell>
                         <TableCell>
                           {margin ? (

@@ -3,7 +3,6 @@ import { SearchBar } from '@/components/POS/SearchBar';
 import { ProductGrid } from '@/components/POS/ProductGrid';
 import { CartSidebar } from '@/components/POS/CartSidebar';
 import { MobileCartButton } from '@/components/POS/MobileCartButton';
-import { SaleDatePicker } from '@/components/POS/SaleDatePicker';
 
 interface POSProps {
   onNavigate: (page: 'pos' | 'dashboard' | 'inventory') => void;
@@ -11,7 +10,7 @@ interface POSProps {
 
 export function POS({ onNavigate }: POSProps) {
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       <POSHeader onNavigate={onNavigate} currentPage="pos" />
       
       <div className="flex-1 flex overflow-hidden">
@@ -20,10 +19,6 @@ export function POS({ onNavigate }: POSProps) {
             <div className="flex-1">
               <SearchBar />
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground hidden sm:inline">Fecha de venta:</span>
-              <SaleDatePicker />
-            </div>
           </div>
           <div className="flex-1 overflow-auto">
             <ProductGrid />
@@ -31,7 +26,7 @@ export function POS({ onNavigate }: POSProps) {
         </div>
         
         {/* Desktop Cart Sidebar */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:block h-full">
           <CartSidebar />
         </div>
       </div>

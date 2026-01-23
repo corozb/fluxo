@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, X, Camera } from 'lucide-react';
+import { Search, X, ScanBarcode } from 'lucide-react';
 import { BarcodeScanner } from './BarcodeScanner';
 
 export function SearchBar() {
@@ -49,7 +49,7 @@ export function SearchBar() {
           onClick={() => setIsScannerOpen(true)}
           title="Escanear código de barras"
         >
-          <Camera className="h-4 w-4" />
+          <ScanBarcode className="h-4 w-4" />
         </Button>
       </div>
 

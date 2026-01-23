@@ -1,22 +1,8 @@
-import { useMemo, useState } from 'react';
-import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { ChevronDown, CalendarIcon, Package } from 'lucide-react';
+import { useMemo } from 'react';
+import { isWithinInterval } from 'date-fns';
+import { Package } from 'lucide-react';
+import { formatNumber } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Accordion,
   AccordionContent,
@@ -31,8 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
 import { usePOSStore } from '@/stores/posStore';
+import { DateRange } from './DateRangeFilter';
+
+interface SalesByCategoryTableProps {
+  dateRange: DateRange;
+}
 
 interface CategoryData {
   category: string;
@@ -45,59 +35,8 @@ interface CategoryData {
   }[];
 }
 
-export function SalesByCategoryTable() {
+export function SalesByCategoryTable({ dateRange }: SalesByCategoryTableProps) {
   const { sales, products } = usePOSStore();
-  const today = new Date();
-
-  const [dateRange, setDateRange] = useState({
-    from: startOfDay(today),
-    to: endOfDay(today)
-  });
-  const [isCustomRange, setIsCustomRange] = useState(false);
-
-  const presetRanges = [
-    {
-      label: 'Hoy',
-      value: 'today',
-      getRange: () => ({
-        from: startOfDay(new Date()),
-        to: endOfDay(new Date())
-      })
-    },
-    {
-      label: 'Esta semana',
-      value: 'week',
-      getRange: () => ({
-        from: startOfWeek(new Date(), { weekStartsOn: 1 }),
-        to: endOfWeek(new Date(), { weekStartsOn: 1 })
-      })
-    },
-    {
-      label: 'Este mes',
-      value: 'month',
-      getRange: () => ({
-        from: startOfMonth(new Date()),
-        to: endOfMonth(new Date())
-      })
-    },
-    {
-      label: 'Personalizado',
-      value: 'custom',
-      getRange: () => dateRange
-    }
-  ];
-
-  const handlePresetChange = (value: string) => {
-    if (value === 'custom') {
-      setIsCustomRange(true);
-      return;
-    }
-    setIsCustomRange(false);
-    const preset = presetRanges.find(p => p.value === value);
-    if (preset) {
-      setDateRange(preset.getRange());
-    }
-  };
 
   const categoryData = useMemo(() => {
     const filteredSales = sales.filter(sale => {
@@ -158,69 +97,10 @@ export function SalesByCategoryTable() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
-            Ventas por Categoría
-          </CardTitle>
-          
-          <div className="flex flex-wrap items-center gap-2">
-            <Select onValueChange={handlePresetChange} defaultValue="today">
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Período" />
-              </SelectTrigger>
-              <SelectContent>
-                {presetRanges.map((preset) => (
-                  <SelectItem key={preset.value} value={preset.value}>
-                    {preset.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {isCustomRange && (
-              <div className="flex items-center gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-9">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(dateRange.from, "dd/MM/yy", { locale: es })}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={dateRange.from}
-                      onSelect={(date) => date && setDateRange({ ...dateRange, from: startOfDay(date) })}
-                      initialFocus
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-
-                <span className="text-muted-foreground">-</span>
-
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-9">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(dateRange.to, "dd/MM/yy", { locale: es })}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={dateRange.to}
-                      onSelect={(date) => date && setDateRange({ ...dateRange, to: endOfDay(date) })}
-                      initialFocus
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
-          </div>
-        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Package className="h-5 w-5" />
+          Ventas por Categoría
+        </CardTitle>
       </CardHeader>
       <CardContent>
         {categoryData.length === 0 ? (
@@ -252,10 +132,10 @@ export function SalesByCategoryTable() {
                       </TableCell>
                       <TableCell className="text-center">{cat.totalQuantity}</TableCell>
                       <TableCell className="text-right font-semibold">
-                        ${cat.totalRevenue.toFixed(2)}
+                        {formatNumber(cat.totalRevenue, '$')}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {((cat.totalRevenue / totalRevenue) * 100).toFixed(1)}%
+                        {totalRevenue > 0 ? ((cat.totalRevenue / totalRevenue) * 100).toFixed(1) : 0}%
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -276,7 +156,7 @@ export function SalesByCategoryTable() {
                                     <TableCell className="py-2 pl-10 text-sm">{product.name}</TableCell>
                                     <TableCell className="py-2 text-center text-sm">{product.quantity}</TableCell>
                                     <TableCell className="py-2 text-right pr-4 text-sm">
-                                      ${product.revenue.toFixed(2)}
+                                      {formatNumber(product.revenue, '$')}
                                     </TableCell>
                                   </TableRow>
                                 ))}

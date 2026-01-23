@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { formatNumber } from '@/lib/utils';
 import { Sale } from '@/stores/posStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -48,7 +49,7 @@ export function Receipt({ sale, onClose }: ReceiptProps) {
     pdf.setFontSize(10);
     sale.items.forEach(item => {
       const itemText = `${item.name} x${item.quantity}`;
-      const priceText = `$${item.subtotal.toFixed(2)}`;
+      const priceText = formatNumber(item.subtotal, '$');
       
       pdf.text(itemText, margin, yPosition);
       pdf.text(priceText, pageWidth - margin, yPosition, { align: 'right' });
@@ -58,12 +59,12 @@ export function Receipt({ sale, onClose }: ReceiptProps) {
     yPosition += 10;
 
     // Totals
-    pdf.text(`Subtotal: $${(sale.total - sale.tax).toFixed(2)}`, pageWidth - margin, yPosition, { align: 'right' });
+    pdf.text(`Subtotal: ${formatNumber(sale.total - sale.tax, '$')}`, pageWidth - margin, yPosition, { align: 'right' });
     yPosition += 8;
-    pdf.text(`Tax: $${sale.tax.toFixed(2)}`, pageWidth - margin, yPosition, { align: 'right' });
+    pdf.text(`Tax: ${formatNumber(sale.tax, '$')}`, pageWidth - margin, yPosition, { align: 'right' });
     yPosition += 8;
     pdf.setFontSize(12);
-    pdf.text(`Total: $${sale.total.toFixed(2)}`, pageWidth - margin, yPosition, { align: 'right' });
+    pdf.text(`Total: ${formatNumber(sale.total, '$')}`, pageWidth - margin, yPosition, { align: 'right' });
 
     pdf.save(`receipt-${sale.id}.pdf`);
   };
@@ -106,11 +107,11 @@ export function Receipt({ sale, onClose }: ReceiptProps) {
                 <div>
                   <div className="font-medium">{item.name}</div>
                   <div className="text-gray-600">
-                    ${item.price.toFixed(2)} × {item.quantity}
+                    {formatNumber(item.price, '$')} × {item.quantity}
                   </div>
                 </div>
                 <div className="text-right font-medium">
-                  ${item.subtotal.toFixed(2)}
+                  {formatNumber(item.subtotal, '$')}
                 </div>
               </div>
             ))}
@@ -120,22 +121,22 @@ export function Receipt({ sale, onClose }: ReceiptProps) {
         <div className="border-t border-gray-200 pt-4 space-y-2 text-sm">
           <div className="flex justify-between">
             <span>Subtotal:</span>
-            <span>${(sale.total - sale.tax).toFixed(2)}</span>
+            <span>{formatNumber(sale.total - sale.tax, '$')}</span>
           </div>
           <div className="flex justify-between">
             <span>Tax (9%):</span>
-            <span>${sale.tax.toFixed(2)}</span>
+            <span>{formatNumber(sale.tax, '$')}</span>
           </div>
           {sale.discount > 0 && (
             <div className="flex justify-between text-green-600">
               <span>Discount:</span>
-              <span>-${sale.discount.toFixed(2)}</span>
+              <span>-{formatNumber(sale.discount, '$')}</span>
             </div>
           )}
           <div className="border-t border-gray-200 pt-2">
             <div className="flex justify-between font-bold text-lg">
               <span>Total:</span>
-              <span>${sale.total.toFixed(2)}</span>
+              <span>{formatNumber(sale.total, '$')}</span>
             </div>
           </div>
         </div>

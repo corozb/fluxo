@@ -11,6 +11,24 @@ import { ProfitMetrics } from '@/components/Dashboard/ProfitMetrics';
 import { SalesByCategoryTable } from '@/components/Dashboard/SalesByCategoryTable';
 import { PaymentMethodsReport } from '@/components/Dashboard/PaymentMethodsReport';
 import { usePOSStore } from '@/stores/posStore';
+import { 
+  DndContext, 
+  closestCenter, 
+  KeyboardSensor, 
+  PointerSensor, 
+  useSensor, 
+  useSensors,
+  DragEndEvent 
+} from '@dnd-kit/core';
+import { 
+  arrayMove, 
+  SortableContext, 
+  sortableKeyboardCoordinates, 
+  rectSortingStrategy 
+} from '@dnd-kit/sortable';
+import { useDashboardStore } from '@/stores/dashboardStore';
+import { SortableWidget } from '@/components/Dashboard/SortableWidget';
+import { DashboardControls } from '@/components/Dashboard/DashboardControls';
 
 interface DashboardProps {
   onNavigate: (page: 'pos' | 'dashboard' | 'inventory') => void;
@@ -18,45 +36,100 @@ interface DashboardProps {
 
 export function Dashboard({ onNavigate }: DashboardProps) {
   const { sales, products } = usePOSStore();
+  const { layout, updateLayout, isEditMode, hiddenWidgets } = useDashboardStore();
   
   const [dateRange, setDateRange] = useState<DateRange>({
     from: startOfDay(new Date()),
     to: endOfDay(new Date())
   });
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Prevent accidental drags when clicking
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = layout.indexOf(active.id as string);
+      const newIndex = layout.indexOf(over.id as string);
+      updateLayout(arrayMove(layout, oldIndex, newIndex));
+    }
+  };
+
+  const widgetComponents: Record<string, React.ReactNode> = {
+    'stats-cards': <StatsCards dateRange={dateRange} />,
+    'sales-metrics': <SalesMetrics sales={sales} dateRange={dateRange} />,
+    'top-products-metrics': <TopProductsMetrics sales={sales} products={products} dateRange={dateRange} />,
+    'profit-metrics': <ProfitMetrics sales={sales} dateRange={dateRange} />,
+    'sales-by-category': <SalesByCategoryTable dateRange={dateRange} />,
+    'payment-methods': <PaymentMethodsReport dateRange={dateRange} />,
+    'sales-chart': <SalesChart dateRange={dateRange} />,
+    'top-products-list': <TopProducts dateRange={dateRange} />,
+  };
+
+  const widgetSpans: Record<string, string> = {
+    'stats-cards': 'col-span-1 md:col-span-6',
+    'sales-metrics': 'col-span-1 md:col-span-2',
+    'top-products-metrics': 'col-span-1 md:col-span-2',
+    'profit-metrics': 'col-span-1 md:col-span-2',
+    'sales-by-category': 'col-span-1 md:col-span-6',
+    'payment-methods': 'col-span-1 md:col-span-6',
+    'sales-chart': 'col-span-1 md:col-span-3',
+    'top-products-list': 'col-span-1 md:col-span-3',
+  };
+
+  const visibleLayout = layout.filter(id => !hiddenWidgets.includes(id));
+
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       <POSHeader onNavigate={onNavigate} currentPage="dashboard" />
       
-      <div className="flex-1 overflow-auto p-6 pb-20 lg:pb-6">
-        <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-              <p className="text-muted-foreground">
-                Resumen del rendimiento de tu tienda
-              </p>
+      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+            <div className="flex items-center gap-2 text-muted-foreground mt-1">
+               <p>Resumen del rendimiento de tu tienda</p>
+               <DashboardControls />
             </div>
-            <DateRangeFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
           </div>
-
-          <StatsCards />
-
-          <div className="grid gap-6 md:grid-cols-3">
-            <SalesMetrics sales={sales} dateRange={dateRange} />
-            <TopProductsMetrics sales={sales} products={products} dateRange={dateRange} />
-            <ProfitMetrics sales={sales} dateRange={dateRange} />
-          </div>
-
-          <SalesByCategoryTable />
-
-          <PaymentMethodsReport />
-
-          <div className="grid gap-6 md:grid-cols-2">
-            <SalesChart />
-            <TopProducts />
-          </div>
+          <DateRangeFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
         </div>
+      </div>
+      
+      <div className="flex-1 overflow-auto p-6 pb-20 lg:pb-6">
+        <DndContext 
+          sensors={sensors} 
+          collisionDetection={closestCenter} 
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext 
+            items={visibleLayout} 
+            strategy={rectSortingStrategy}
+            disabled={!isEditMode}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+              {visibleLayout.map((id) => (
+                <SortableWidget 
+                  key={id} 
+                  id={id} 
+                  isEditMode={isEditMode}
+                  className={widgetSpans[id]}
+                >
+                  {widgetComponents[id]}
+                </SortableWidget>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
   );

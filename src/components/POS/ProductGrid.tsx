@@ -1,5 +1,6 @@
 import { usePOSStore } from '@/stores/posStore';
 import { Card, CardContent } from '@/components/ui/card';
+import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, AlertTriangle, Barcode } from 'lucide-react';
@@ -44,7 +45,7 @@ export function ProductGrid() {
                   
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-base font-bold text-primary">
-                      ${product.price.toFixed(2)}
+                      {formatNumber(product.price, '$')}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       Stock: {product.stock}
@@ -118,7 +119,7 @@ export function ProductGrid() {
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
                     <span className="text-lg font-bold text-primary">
-                      ${product.price.toFixed(2)}
+                      {formatNumber(product.price, '$')}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       Stock: {product.stock}

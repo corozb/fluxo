@@ -1,20 +1,17 @@
-import { useState, useMemo } from 'react';
-import { format, isWithinInterval, startOfDay, endOfDay, subDays, startOfWeek, startOfMonth } from 'date-fns';
+import { useMemo } from 'react';
+import { format, isWithinInterval } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { usePOSStore, Sale, CartItem } from '@/stores/posStore';
+import { usePOSStore, Sale } from '@/stores/posStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { CalendarIcon, CreditCard, Banknote, Smartphone, TrendingUp, Receipt } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { CreditCard, Banknote, Smartphone, Receipt } from 'lucide-react';
+import { cn, formatNumber } from '@/lib/utils';
+import { DateRange } from './DateRangeFilter';
 
-interface DateRange {
-  from: Date;
-  to: Date;
+interface PaymentMethodsReportProps {
+  dateRange: DateRange;
 }
 
 interface PaymentMethodData {
@@ -24,7 +21,7 @@ interface PaymentMethodData {
   totalAmount: number;
   transactionCount: number;
   percentage: number;
-  products: { name: string; quantity: number; revenue: number }[];
+  products: { date: Date; name: string; quantity: number; revenue: number }[];
 }
 
 const paymentMethodLabels = {
@@ -45,25 +42,9 @@ const paymentMethodColors = {
   digital: 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
 };
 
-export function PaymentMethodsReport() {
+export function PaymentMethodsReport({ dateRange }: PaymentMethodsReportProps) {
   const { sales } = usePOSStore();
-  const today = new Date();
   
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: startOfDay(today),
-    to: endOfDay(today)
-  });
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-
-  const presets = [
-    { label: 'Hoy', from: startOfDay(today), to: endOfDay(today) },
-    { label: 'Ayer', from: startOfDay(subDays(today, 1)), to: endOfDay(subDays(today, 1)) },
-    { label: 'Esta semana', from: startOfWeek(today, { weekStartsOn: 1 }), to: endOfDay(today) },
-    { label: 'Este mes', from: startOfMonth(today), to: endOfDay(today) },
-    { label: 'Últimos 7 días', from: startOfDay(subDays(today, 6)), to: endOfDay(today) },
-    { label: 'Últimos 30 días', from: startOfDay(subDays(today, 29)), to: endOfDay(today) }
-  ];
-
   const paymentData = useMemo(() => {
     // Filter sales by date range
     const filteredSales = sales.filter(sale => {
@@ -79,8 +60,10 @@ export function PaymentMethodsReport() {
     };
 
     filteredSales.forEach(sale => {
-      methodGroups[sale.paymentMethod].sales.push(sale);
-      methodGroups[sale.paymentMethod].totalAmount += sale.total;
+      if (methodGroups[sale.paymentMethod]) {
+        methodGroups[sale.paymentMethod].sales.push(sale);
+        methodGroups[sale.paymentMethod].totalAmount += sale.total;
+      }
     });
 
     const totalRevenue = Object.values(methodGroups).reduce((sum, group) => sum + group.totalAmount, 0);
@@ -89,26 +72,22 @@ export function PaymentMethodsReport() {
     const result: PaymentMethodData[] = (['cash', 'card', 'digital'] as const).map(method => {
       const group = methodGroups[method];
       
-      // Aggregate products sold with this payment method
-      const productMap = new Map<string, { name: string; quantity: number; revenue: number }>();
+      // List all product sales individually with their date
+      const products: { date: Date; name: string; quantity: number; revenue: number }[] = [];
       
       group.sales.forEach(sale => {
-        sale.items.forEach((item: CartItem) => {
-          const existing = productMap.get(item.id);
-          if (existing) {
-            existing.quantity += item.quantity;
-            existing.revenue += item.subtotal;
-          } else {
-            productMap.set(item.id, {
-              name: item.name,
-              quantity: item.quantity,
-              revenue: item.subtotal
-            });
-          }
+        sale.items.forEach((item) => {
+          products.push({
+            date: new Date(sale.timestamp),
+            name: item.name,
+            quantity: item.quantity,
+            revenue: item.subtotal
+          });
         });
       });
 
-      const products = Array.from(productMap.values()).sort((a, b) => b.revenue - a.revenue);
+      // Sort products by date descending (newest first)
+      products.sort((a, b) => b.date.getTime() - a.date.getTime());
 
       return {
         method,
@@ -135,67 +114,6 @@ export function PaymentMethodsReport() {
             <Receipt className="h-5 w-5 text-primary" />
             <CardTitle>Reporte por Método de Pago</CardTitle>
           </div>
-          
-          <div className="flex flex-wrap items-center gap-2">
-            {presets.slice(0, 3).map((preset) => (
-              <Button
-                key={preset.label}
-                variant={
-                  dateRange.from.getTime() === preset.from.getTime() && 
-                  dateRange.to.getTime() === preset.to.getTime() 
-                    ? "default" 
-                    : "outline"
-                }
-                size="sm"
-                onClick={() => setDateRange({ from: preset.from, to: preset.to })}
-              >
-                {preset.label}
-              </Button>
-            ))}
-            
-            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <CalendarIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline">
-                    {format(dateRange.from, 'dd/MM/yy', { locale: es })} - {format(dateRange.to, 'dd/MM/yy', { locale: es })}
-                  </span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="end">
-                <div className="p-3 border-b">
-                  <div className="flex flex-wrap gap-1">
-                    {presets.map((preset) => (
-                      <Button
-                        key={preset.label}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setDateRange({ from: preset.from, to: preset.to });
-                          setIsCalendarOpen(false);
-                        }}
-                      >
-                        {preset.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                <Calendar
-                  mode="range"
-                  selected={{ from: dateRange.from, to: dateRange.to }}
-                  onSelect={(range) => {
-                    if (range?.from && range?.to) {
-                      setDateRange({ from: startOfDay(range.from), to: endOfDay(range.to) });
-                    } else if (range?.from) {
-                      setDateRange({ from: startOfDay(range.from), to: endOfDay(range.from) });
-                    }
-                  }}
-                  numberOfMonths={1}
-                  className={cn("p-3 pointer-events-auto")}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
         </div>
       </CardHeader>
       
@@ -204,7 +122,7 @@ export function PaymentMethodsReport() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
           <div className="p-4 rounded-lg bg-muted/50">
             <div className="text-sm text-muted-foreground">Total Recaudado</div>
-            <div className="text-2xl font-bold text-primary">${totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-primary">{formatNumber(totalRevenue, '$')}</div>
           </div>
           <div className="p-4 rounded-lg bg-muted/50">
             <div className="text-sm text-muted-foreground">Transacciones</div>
@@ -213,7 +131,7 @@ export function PaymentMethodsReport() {
           <div className="p-4 rounded-lg bg-muted/50 col-span-2 sm:col-span-1">
             <div className="text-sm text-muted-foreground">Ticket Promedio</div>
             <div className="text-2xl font-bold">
-              ${totalTransactions > 0 ? (totalRevenue / totalTransactions).toFixed(2) : '0.00'}
+              {totalTransactions > 0 ? formatNumber(totalRevenue / totalTransactions, '$') : formatNumber(0, '$')}
             </div>
           </div>
         </div>
@@ -245,7 +163,7 @@ export function PaymentMethodsReport() {
                         {data.percentage.toFixed(1)}%
                       </Badge>
                       <div className="text-right">
-                        <div className="font-bold text-lg">${data.totalAmount.toFixed(2)}</div>
+                        <div className="font-bold text-lg">{formatNumber(data.totalAmount, '$')}</div>
                       </div>
                     </div>
                   </div>
@@ -260,6 +178,7 @@ export function PaymentMethodsReport() {
                       <Table>
                         <TableHeader>
                           <TableRow>
+                            <TableHead>Fecha</TableHead>
                             <TableHead>Producto</TableHead>
                             <TableHead className="text-center">Cantidad</TableHead>
                             <TableHead className="text-right">Ingresos</TableHead>
@@ -269,10 +188,13 @@ export function PaymentMethodsReport() {
                         <TableBody>
                           {data.products.map((product, index) => (
                             <TableRow key={`${data.method}-${product.name}-${index}`}>
+                              <TableCell className="text-muted-foreground font-mono text-xs">
+                                {format(product.date, 'dd/MM/yy HH:mm', { locale: es })}
+                              </TableCell>
                               <TableCell className="font-medium">{product.name}</TableCell>
                               <TableCell className="text-center">{product.quantity}</TableCell>
                               <TableCell className="text-right font-mono">
-                                ${product.revenue.toFixed(2)}
+                                {formatNumber(product.revenue, '$')}
                               </TableCell>
                               <TableCell className="text-right">
                                 <Badge variant="outline" className="font-mono">
