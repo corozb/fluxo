@@ -2,44 +2,53 @@ import { usePOSStore } from '@/stores/posStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, ShoppingCart, Package, TrendingUp, AlertTriangle } from 'lucide-react';
+import { isWithinInterval } from 'date-fns';
+import { DateRange } from './DateRangeFilter';
 
-export function StatsCards() {
+interface StatsCardsProps {
+  dateRange: DateRange;
+}
+
+export function StatsCards({ dateRange }: StatsCardsProps) {
   const { sales, products } = usePOSStore();
 
-  // Calculate today's sales
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todaySales = sales.filter(sale => new Date(sale.timestamp) >= today);
-  const todayRevenue = todaySales.reduce((sum, sale) => sum + sale.total, 0);
-  const todayTransactions = todaySales.length;
+  // Filter sales by date range
+  const periodSales = sales.filter(sale => {
+    const saleDate = new Date(sale.timestamp);
+    return isWithinInterval(saleDate, { start: dateRange.from, end: dateRange.to });
+  });
 
-  // Calculate total revenue
+  // Calculate metrics for the period
+  const periodRevenue = periodSales.reduce((sum, sale) => sum + sale.total, 0);
+  const periodTransactions = periodSales.length;
+
+  // Calculate total revenue (all time)
   const totalRevenue = sales.reduce((sum, sale) => sum + sale.total, 0);
 
   // Calculate low stock items
   const lowStockItems = products.filter(product => product.stock <= product.lowStockThreshold);
 
-  // Calculate average transaction value
-  const avgTransaction = sales.length > 0 ? totalRevenue / sales.length : 0;
+  // Calculate average transaction value for the period
+  const avgTransaction = periodSales.length > 0 ? periodRevenue / periodSales.length : 0;
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Today's Revenue</CardTitle>
+          <CardTitle className="text-sm font-medium">Revenue</CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-success">${todayRevenue.toFixed(2)}</div>
+          <div className="text-2xl font-bold text-success">${periodRevenue.toFixed(2)}</div>
           <p className="text-xs text-muted-foreground">
-            From {todayTransactions} transactions
+            {periodTransactions} transactions in period
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+          <CardTitle className="text-sm font-medium">Total Revenue (All Time)</CardTitle>
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -58,7 +67,7 @@ export function StatsCards() {
         <CardContent>
           <div className="text-2xl font-bold">${avgTransaction.toFixed(2)}</div>
           <p className="text-xs text-muted-foreground">
-            Per transaction average
+            Average for period
           </p>
         </CardContent>
       </Card>

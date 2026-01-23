@@ -88,7 +88,7 @@ export function MobileCartContent() {
         </CardTitle>
       </CardHeader>
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         {cart.length === 0 ? (
           <div className="flex-1 flex items-center justify-center text-center">
             <div className="text-muted-foreground">
