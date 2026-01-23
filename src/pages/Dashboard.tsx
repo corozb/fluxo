@@ -9,6 +9,7 @@ import { SalesMetrics } from '@/components/Dashboard/SalesMetrics';
 import { TopProductsMetrics } from '@/components/Dashboard/TopProductsMetrics';
 import { ProfitMetrics } from '@/components/Dashboard/ProfitMetrics';
 import { SalesByCategoryTable } from '@/components/Dashboard/SalesByCategoryTable';
+import { PaymentMethodsReport } from '@/components/Dashboard/PaymentMethodsReport';
 import { usePOSStore } from '@/stores/posStore';
 
 interface DashboardProps {
@@ -48,6 +49,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           </div>
 
           <SalesByCategoryTable />
+
+          <PaymentMethodsReport />
 
           <div className="grid gap-6 md:grid-cols-2">
             <SalesChart />
