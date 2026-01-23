@@ -4,6 +4,7 @@ import { Dashboard } from '@/pages/Dashboard';
 import { Inventory } from '@/pages/Inventory';
 import { Login } from '@/pages/Login';
 import { usePOSStore } from '@/stores/posStore';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 
 export function MainApp() {
   const [currentPage, setCurrentPage] = useState<'pos' | 'dashboard' | 'inventory'>('pos');
@@ -30,10 +31,11 @@ export function MainApp() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16 lg:pb-0">
       {currentPage === 'pos' && <POS onNavigate={handleNavigate} />}
       {currentPage === 'dashboard' && <Dashboard onNavigate={handleNavigate} />}
       {currentPage === 'inventory' && <Inventory onNavigate={handleNavigate} />}
+      <MobileBottomNav currentPage={currentPage} onNavigate={handleNavigate} />
     </div>
   );
 }

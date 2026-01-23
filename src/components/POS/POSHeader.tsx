@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { BarChart3, Settings, LogOut, User } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface POSHeaderProps {
   onNavigate: (page: 'pos' | 'dashboard' | 'inventory') => void;
@@ -34,7 +35,7 @@ export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
           <h1 className="text-xl font-bold text-card-foreground">ProPOS</h1>
         </div>
 
-        <nav className="flex items-center space-x-1">
+        <nav className="hidden lg:flex items-center space-x-1">
           <Button
             variant={currentPage === 'pos' ? 'default' : 'ghost'}
             onClick={() => onNavigate('pos')}
@@ -61,8 +62,9 @@ export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
         </nav>
       </div>
 
-      <div className="flex items-center space-x-4">
-        <div className="text-right">
+      <div className="flex items-center space-x-2 sm:space-x-4">
+        <ThemeToggle />
+        <div className="text-right hidden sm:block">
           <p className="text-sm font-medium text-card-foreground">
             {new Date().toLocaleDateString()}
           </p>
