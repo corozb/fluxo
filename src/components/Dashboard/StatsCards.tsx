@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { DollarSign, ShoppingCart, Package, TrendingUp, AlertTriangle } from 'lucide-react';
 import { isWithinInterval } from 'date-fns';
 import { DateRange } from './DateRangeFilter';
+import { formatNumber } from '@/lib/utils';
 
 interface StatsCardsProps {
   dateRange: DateRange;
@@ -39,7 +40,7 @@ export function StatsCards({ dateRange }: StatsCardsProps) {
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-success">${periodRevenue.toFixed(2)}</div>
+          <div className="text-2xl font-bold text-success">{formatNumber(periodRevenue, '$')}</div>
           <p className="text-xs text-muted-foreground">
             {periodTransactions} transactions in period
           </p>
@@ -48,11 +49,11 @@ export function StatsCards({ dateRange }: StatsCardsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Revenue (All Time)</CardTitle>
+          <CardTitle className="text-sm font-medium truncate">Total Revenue (All Time)</CardTitle>
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+          <div className="text-2xl font-bold">{formatNumber(totalRevenue, '$')}</div>
           <p className="text-xs text-muted-foreground">
             {sales.length} total transactions
           </p>
@@ -61,11 +62,11 @@ export function StatsCards({ dateRange }: StatsCardsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Avg Transaction</CardTitle>
+          <CardTitle className="text-sm font-medium truncate">Avg Transaction</CardTitle>
           <ShoppingCart className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">${avgTransaction.toFixed(2)}</div>
+          <div className="text-2xl font-bold">{formatNumber(avgTransaction, '$')}</div>
           <p className="text-xs text-muted-foreground">
             Average for period
           </p>

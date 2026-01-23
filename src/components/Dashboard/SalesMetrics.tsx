@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatNumber } from '@/lib/utils';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -78,7 +79,7 @@ export function SalesMetrics({ sales, dateRange }: SalesMetricsProps) {
           <TabsContent value="today" className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold text-primary">${metrics.today.total.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-primary">{formatNumber(metrics.today.total, '$')}</p>
                 <p className="text-sm text-muted-foreground">Total vendido</p>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
@@ -91,7 +92,7 @@ export function SalesMetrics({ sales, dateRange }: SalesMetricsProps) {
           <TabsContent value="week" className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold text-primary">${metrics.week.total.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-primary">{formatNumber(metrics.week.total, '$')}</p>
                 <p className="text-sm text-muted-foreground">Total vendido</p>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
@@ -104,7 +105,7 @@ export function SalesMetrics({ sales, dateRange }: SalesMetricsProps) {
           <TabsContent value="month" className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold text-primary">${metrics.month.total.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-primary">{formatNumber(metrics.month.total, '$')}</p>
                 <p className="text-sm text-muted-foreground">Total vendido</p>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
@@ -117,7 +118,7 @@ export function SalesMetrics({ sales, dateRange }: SalesMetricsProps) {
           <TabsContent value="range" className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold text-primary">${metrics.range.total.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-primary">{formatNumber(metrics.range.total, '$')}</p>
                 <p className="text-sm text-muted-foreground">Total vendido</p>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">

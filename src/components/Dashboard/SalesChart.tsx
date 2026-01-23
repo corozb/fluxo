@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { usePOSStore } from '@/stores/posStore';
+import { formatNumber } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Line } from 'react-chartjs-2';
 import {
@@ -86,7 +87,7 @@ export function SalesChart({ dateRange }: SalesChartProps) {
         beginAtZero: true,
         ticks: {
           callback: function(value: any) {
-            return '$' + value.toFixed(0);
+            return formatNumber(value, '$');
           }
         }
       },

@@ -66,7 +66,7 @@ export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
       <div className="flex items-center space-x-2 sm:space-x-4">
         <ThemeToggle />
         <div className="text-right">
-             <SaleDatePicker />
+          {currentPage === 'pos' && <SaleDatePicker />}
         </div>
 
         <DropdownMenu>

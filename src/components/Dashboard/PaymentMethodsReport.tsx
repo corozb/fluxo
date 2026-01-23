@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { CreditCard, Banknote, Smartphone, Receipt } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatNumber } from '@/lib/utils';
 import { DateRange } from './DateRangeFilter';
 
 interface PaymentMethodsReportProps {
@@ -122,7 +122,7 @@ export function PaymentMethodsReport({ dateRange }: PaymentMethodsReportProps) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
           <div className="p-4 rounded-lg bg-muted/50">
             <div className="text-sm text-muted-foreground">Total Recaudado</div>
-            <div className="text-2xl font-bold text-primary">${totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-primary">{formatNumber(totalRevenue, '$')}</div>
           </div>
           <div className="p-4 rounded-lg bg-muted/50">
             <div className="text-sm text-muted-foreground">Transacciones</div>
@@ -131,7 +131,7 @@ export function PaymentMethodsReport({ dateRange }: PaymentMethodsReportProps) {
           <div className="p-4 rounded-lg bg-muted/50 col-span-2 sm:col-span-1">
             <div className="text-sm text-muted-foreground">Ticket Promedio</div>
             <div className="text-2xl font-bold">
-              ${totalTransactions > 0 ? (totalRevenue / totalTransactions).toFixed(2) : '0.00'}
+              {totalTransactions > 0 ? formatNumber(totalRevenue / totalTransactions, '$') : formatNumber(0, '$')}
             </div>
           </div>
         </div>
@@ -163,7 +163,7 @@ export function PaymentMethodsReport({ dateRange }: PaymentMethodsReportProps) {
                         {data.percentage.toFixed(1)}%
                       </Badge>
                       <div className="text-right">
-                        <div className="font-bold text-lg">${data.totalAmount.toFixed(2)}</div>
+                        <div className="font-bold text-lg">{formatNumber(data.totalAmount, '$')}</div>
                       </div>
                     </div>
                   </div>
@@ -194,7 +194,7 @@ export function PaymentMethodsReport({ dateRange }: PaymentMethodsReportProps) {
                               <TableCell className="font-medium">{product.name}</TableCell>
                               <TableCell className="text-center">{product.quantity}</TableCell>
                               <TableCell className="text-right font-mono">
-                                ${product.revenue.toFixed(2)}
+                                {formatNumber(product.revenue, '$')}
                               </TableCell>
                               <TableCell className="text-right">
                                 <Badge variant="outline" className="font-mono">

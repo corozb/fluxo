@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { formatNumber } from '@/lib/utils';
 import { usePOSStore } from '@/stores/posStore';
 import { POSHeader } from '@/components/POS/POSHeader';
 import { ProductForm } from '@/components/Inventory/ProductForm';
@@ -166,10 +167,10 @@ export function Inventory({ onNavigate }: InventoryProps) {
                           <Badge variant="outline">{product.category}</Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
-                          {product.cost ? `$${product.cost.toFixed(2)}` : '-'}
+                          {product.cost ? formatNumber(product.cost, '$') : '-'}
                         </TableCell>
                         <TableCell className="font-medium">
-                          ${product.price.toFixed(2)}
+                          {formatNumber(product.price, '$')}
                         </TableCell>
                         <TableCell>
                           {margin ? (

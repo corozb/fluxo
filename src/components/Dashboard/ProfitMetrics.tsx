@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatNumber } from '@/lib/utils';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -63,12 +64,12 @@ export function ProfitMetrics({ sales, dateRange }: ProfitMetricsProps) {
   const ProfitDisplay = ({ revenue, profit }: { revenue: number; profit: number }) => (
     <div className="grid grid-cols-2 gap-4">
       <div className="text-center p-4 bg-muted rounded-lg">
-        <p className="text-2xl font-bold">${revenue.toFixed(2)}</p>
+        <p className="text-2xl font-bold">{formatNumber(revenue, '$')}</p>
         <p className="text-sm text-muted-foreground">Ingresos</p>
       </div>
       <div className="text-center p-4 bg-primary/10 rounded-lg">
         <div className="flex items-center justify-center gap-1">
-          <p className="text-2xl font-bold text-primary">${profit.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-primary">{formatNumber(profit, '$')}</p>
           <TrendingUp className="h-5 w-5 text-primary" />
         </div>
         <p className="text-sm text-muted-foreground">Ganancia (30%)</p>

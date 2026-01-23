@@ -1,5 +1,6 @@
 import { usePOSStore } from '@/stores/posStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -142,9 +143,9 @@ export function CartSidebar() {
                         </div>
                         
                         <div className="text-right">
-                          <p className="text-sm font-medium">${item.subtotal.toFixed(2)}</p>
+                          <p className="text-sm font-medium">{formatNumber(item.subtotal, '$')}</p>
                           <p className="text-xs text-muted-foreground">
-                            ${(item.subtotal / item.quantity).toFixed(2)} c/u prom.
+                            {formatNumber(item.subtotal / item.quantity, '$')} c/u prom.
                           </p>
                         </div>
                       </div>
@@ -210,7 +211,7 @@ export function CartSidebar() {
                                     </div>
                                   ) : (
                                     <div className="flex items-center space-x-1">
-                                      <span className="font-medium">${unitPrice.toFixed(2)}</span>
+                                      <span className="font-medium">{formatNumber(unitPrice, '$')}</span>
                                       <Button
                                         variant="ghost"
                                         size="sm"
@@ -286,16 +287,16 @@ export function CartSidebar() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Subtotal</span>
-                  <span>${cartSubtotal.toFixed(2)}</span>
+                  <span>{formatNumber(cartSubtotal, '$')}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Impuesto (9%)</span>
-                  <span>${cartTax.toFixed(2)}</span>
+                  <span>{formatNumber(cartTax, '$')}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span className="text-pos-total">${cartTotal.toFixed(2)}</span>
+                  <span className="text-pos-total">{formatNumber(cartTotal, '$')}</span>
                 </div>
               </div>
 

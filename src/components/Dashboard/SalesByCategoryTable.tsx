@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { isWithinInterval } from 'date-fns';
 import { Package } from 'lucide-react';
+import { formatNumber } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Accordion,
@@ -131,7 +132,7 @@ export function SalesByCategoryTable({ dateRange }: SalesByCategoryTableProps) {
                       </TableCell>
                       <TableCell className="text-center">{cat.totalQuantity}</TableCell>
                       <TableCell className="text-right font-semibold">
-                        ${cat.totalRevenue.toFixed(2)}
+                        {formatNumber(cat.totalRevenue, '$')}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {totalRevenue > 0 ? ((cat.totalRevenue / totalRevenue) * 100).toFixed(1) : 0}%
@@ -155,7 +156,7 @@ export function SalesByCategoryTable({ dateRange }: SalesByCategoryTableProps) {
                                     <TableCell className="py-2 pl-10 text-sm">{product.name}</TableCell>
                                     <TableCell className="py-2 text-center text-sm">{product.quantity}</TableCell>
                                     <TableCell className="py-2 text-right pr-4 text-sm">
-                                      ${product.revenue.toFixed(2)}
+                                      {formatNumber(product.revenue, '$')}
                                     </TableCell>
                                   </TableRow>
                                 ))}

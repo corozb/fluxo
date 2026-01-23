@@ -1,4 +1,5 @@
 import { usePOSStore } from '@/stores/posStore';
+import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
@@ -38,7 +39,7 @@ export function MobileCartButton() {
       
       {cart.length > 0 && (
         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-pos-total text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
-          ${cartTotal.toFixed(2)}
+          {formatNumber(cartTotal, '$')}
         </div>
       )}
     </div>

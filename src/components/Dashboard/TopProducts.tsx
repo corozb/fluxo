@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { isWithinInterval } from 'date-fns';
 import { DateRange } from './DateRangeFilter';
+import { formatNumber } from '@/lib/utils';
 
 interface TopProductsProps {
   dateRange: DateRange;
@@ -73,7 +74,7 @@ export function TopProducts({ dateRange }: TopProductsProps) {
                 <div className="text-right">
                   <p className="font-medium text-sm">{item.quantity} vendidos</p>
                   <p className="text-xs text-muted-foreground">
-                    ${item.revenue.toFixed(2)}
+                    {formatNumber(item.revenue, '$')}
                   </p>
                 </div>
               </div>
