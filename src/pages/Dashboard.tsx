@@ -8,6 +8,7 @@ import { DateRangeFilter, DateRange } from '@/components/Dashboard/DateRangeFilt
 import { SalesMetrics } from '@/components/Dashboard/SalesMetrics';
 import { TopProductsMetrics } from '@/components/Dashboard/TopProductsMetrics';
 import { ProfitMetrics } from '@/components/Dashboard/ProfitMetrics';
+import { SalesByCategoryTable } from '@/components/Dashboard/SalesByCategoryTable';
 import { usePOSStore } from '@/stores/posStore';
 
 interface DashboardProps {
@@ -26,7 +27,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     <div className="h-screen flex flex-col bg-background">
       <POSHeader onNavigate={onNavigate} currentPage="dashboard" />
       
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-6 pb-20 lg:pb-6">
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -45,6 +46,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             <TopProductsMetrics sales={sales} products={products} dateRange={dateRange} />
             <ProfitMetrics sales={sales} dateRange={dateRange} />
           </div>
+
+          <SalesByCategoryTable />
 
           <div className="grid gap-6 md:grid-cols-2">
             <SalesChart />
