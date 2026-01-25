@@ -55,18 +55,18 @@ function TopProductCard({ data, label }: { data: ProductSalesData | null; label:
   }
 
   return (
-    <div className="p-4 bg-muted rounded-lg space-y-2">
-      <div className="flex items-center justify-between">
-        <Badge variant="secondary" className="flex items-center gap-1">
+    <div className="p-3 sm:p-4 bg-muted rounded-lg space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <Badge variant="secondary" className="flex items-center gap-1 text-xs">
           <Award className="h-3 w-3" />
           #1
         </Badge>
-        <Badge variant="outline">{data.product.category}</Badge>
+        <Badge variant="outline" className="text-xs truncate max-w-[100px]">{data.product.category}</Badge>
       </div>
-      <p className="font-semibold text-lg">{data.product.name}</p>
-      <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">{data.quantity} unidades</span>
-        <span className="font-medium text-primary">${data.revenue.toFixed(2)}</span>
+      <p className="font-semibold text-sm sm:text-lg truncate">{data.product.name}</p>
+      <div className="flex justify-between text-xs sm:text-sm gap-2">
+        <span className="text-muted-foreground truncate">{data.quantity} unidades</span>
+        <span className="font-medium text-primary truncate">${data.revenue.toFixed(2)}</span>
       </div>
     </div>
   );
@@ -125,11 +125,11 @@ export function TopProductsMetrics({ sales, products, dateRange }: TopProductsMe
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="today" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="today">Hoy</TabsTrigger>
-            <TabsTrigger value="week">Semana</TabsTrigger>
-            <TabsTrigger value="month">Mes</TabsTrigger>
-            <TabsTrigger value="range">Rango</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 h-auto">
+            <TabsTrigger value="today" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Hoy</TabsTrigger>
+            <TabsTrigger value="week" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Semana</TabsTrigger>
+            <TabsTrigger value="month" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Mes</TabsTrigger>
+            <TabsTrigger value="range" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Rango</TabsTrigger>
           </TabsList>
           
           <TabsContent value="today" className="mt-4">

@@ -102,7 +102,7 @@ export function SalesByCategoryTable({ dateRange }: SalesByCategoryTableProps) {
           Ventas por Categoría
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-x-auto">
         {categoryData.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             No hay ventas en el período seleccionado
@@ -112,50 +112,50 @@ export function SalesByCategoryTable({ dateRange }: SalesByCategoryTableProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[40%]">Categoría</TableHead>
-                  <TableHead className="text-center">Unidades</TableHead>
-                  <TableHead className="text-right">Ingresos</TableHead>
-                  <TableHead className="text-right w-[80px]">%</TableHead>
+                  <TableHead className="w-[40%] text-xs sm:text-sm">Categoría</TableHead>
+                  <TableHead className="text-center text-xs sm:text-sm">Uds.</TableHead>
+                  <TableHead className="text-right text-xs sm:text-sm">Ingresos</TableHead>
+                  <TableHead className="text-right w-[60px] text-xs sm:text-sm">%</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {categoryData.map((cat, index) => (
                   <AccordionItem key={cat.category} value={cat.category} className="border-0">
                     <TableRow className="hover:bg-muted/50">
-                      <TableCell className="font-medium">
-                        <AccordionTrigger className="hover:no-underline py-0 w-full justify-start gap-2">
-                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold mr-2">
+                      <TableCell className="font-medium py-2">
+                        <AccordionTrigger className="hover:no-underline py-0 w-full justify-start gap-1 sm:gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 text-primary text-xs font-bold mr-1 sm:mr-2 flex-shrink-0">
                             {index + 1}
                           </span>
-                          {cat.category}
+                          <span className="truncate text-xs sm:text-sm">{cat.category}</span>
                         </AccordionTrigger>
                       </TableCell>
-                      <TableCell className="text-center">{cat.totalQuantity}</TableCell>
-                      <TableCell className="text-right font-semibold">
+                      <TableCell className="text-center text-xs sm:text-sm py-2">{cat.totalQuantity}</TableCell>
+                      <TableCell className="text-right font-semibold text-xs sm:text-sm py-2">
                         {formatNumber(cat.totalRevenue, '$')}
                       </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
+                      <TableCell className="text-right text-muted-foreground text-xs sm:text-sm py-2">
                         {totalRevenue > 0 ? ((cat.totalRevenue / totalRevenue) * 100).toFixed(1) : 0}%
                       </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell colSpan={4} className="p-0">
                         <AccordionContent className="pb-0">
-                          <div className="bg-muted/30 rounded-md mx-2 mb-2">
+                          <div className="bg-muted/30 rounded-md mx-1 sm:mx-2 mb-2 overflow-x-auto">
                             <Table>
                               <TableHeader>
                                 <TableRow className="hover:bg-transparent">
-                                  <TableHead className="text-xs h-8 pl-10">Producto</TableHead>
-                                  <TableHead className="text-xs h-8 text-center">Unidades</TableHead>
-                                  <TableHead className="text-xs h-8 text-right pr-4">Ingresos</TableHead>
+                                  <TableHead className="text-xs h-8 pl-4 sm:pl-10">Producto</TableHead>
+                                  <TableHead className="text-xs h-8 text-center">Uds.</TableHead>
+                                  <TableHead className="text-xs h-8 text-right pr-2 sm:pr-4">Ingresos</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
                                 {cat.products.map((product) => (
                                   <TableRow key={product.name} className="hover:bg-muted/50">
-                                    <TableCell className="py-2 pl-10 text-sm">{product.name}</TableCell>
-                                    <TableCell className="py-2 text-center text-sm">{product.quantity}</TableCell>
-                                    <TableCell className="py-2 text-right pr-4 text-sm">
+                                    <TableCell className="py-1.5 pl-4 sm:pl-10 text-xs max-w-[120px] truncate">{product.name}</TableCell>
+                                    <TableCell className="py-1.5 text-center text-xs">{product.quantity}</TableCell>
+                                    <TableCell className="py-1.5 text-right pr-2 sm:pr-4 text-xs">
                                       {formatNumber(product.revenue, '$')}
                                     </TableCell>
                                   </TableRow>

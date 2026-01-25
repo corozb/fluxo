@@ -62,17 +62,17 @@ export function ProfitMetrics({ sales, dateRange }: ProfitMetricsProps) {
   }, [sales, dateRange, today]);
 
   const ProfitDisplay = ({ revenue, profit }: { revenue: number; profit: number }) => (
-    <div className="grid grid-cols-2 gap-4">
-      <div className="text-center p-4 bg-muted rounded-lg">
-        <p className="text-2xl font-bold">{formatNumber(revenue, '$')}</p>
-        <p className="text-sm text-muted-foreground">Ingresos</p>
+    <div className="grid grid-cols-2 gap-2 sm:gap-4">
+      <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+        <p className="text-base sm:text-2xl font-bold truncate">{formatNumber(revenue, '$')}</p>
+        <p className="text-xs text-muted-foreground">Ingresos</p>
       </div>
-      <div className="text-center p-4 bg-primary/10 rounded-lg">
+      <div className="text-center p-2 sm:p-4 bg-primary/10 rounded-lg">
         <div className="flex items-center justify-center gap-1">
-          <p className="text-2xl font-bold text-primary">{formatNumber(profit, '$')}</p>
-          <TrendingUp className="h-5 w-5 text-primary" />
+          <p className="text-base sm:text-2xl font-bold text-primary truncate">{formatNumber(profit, '$')}</p>
+          <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
         </div>
-        <p className="text-sm text-muted-foreground">Ganancia (30%)</p>
+        <p className="text-xs text-muted-foreground">Ganancia (30%)</p>
       </div>
     </div>
   );
@@ -88,11 +88,11 @@ export function ProfitMetrics({ sales, dateRange }: ProfitMetricsProps) {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="today" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="today">Hoy</TabsTrigger>
-            <TabsTrigger value="week">Semana</TabsTrigger>
-            <TabsTrigger value="month">Mes</TabsTrigger>
-            <TabsTrigger value="range">Rango</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 h-auto">
+            <TabsTrigger value="today" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Hoy</TabsTrigger>
+            <TabsTrigger value="week" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Semana</TabsTrigger>
+            <TabsTrigger value="month" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Mes</TabsTrigger>
+            <TabsTrigger value="range" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Rango</TabsTrigger>
           </TabsList>
           
           <TabsContent value="today" className="mt-4">

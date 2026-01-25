@@ -119,18 +119,18 @@ export function PaymentMethodsReport({ dateRange }: PaymentMethodsReportProps) {
       
       <CardContent>
         {/* Summary Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-          <div className="p-4 rounded-lg bg-muted/50">
-            <div className="text-sm text-muted-foreground">Total Recaudado</div>
-            <div className="text-2xl font-bold text-primary">{formatNumber(totalRevenue, '$')}</div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 mb-6">
+          <div className="p-2 sm:p-4 rounded-lg bg-muted/50">
+            <div className="text-xs sm:text-sm text-muted-foreground truncate">Total Recaudado</div>
+            <div className="text-base sm:text-2xl font-bold text-primary truncate">{formatNumber(totalRevenue, '$')}</div>
           </div>
-          <div className="p-4 rounded-lg bg-muted/50">
-            <div className="text-sm text-muted-foreground">Transacciones</div>
-            <div className="text-2xl font-bold">{totalTransactions}</div>
+          <div className="p-2 sm:p-4 rounded-lg bg-muted/50">
+            <div className="text-xs sm:text-sm text-muted-foreground">Transacciones</div>
+            <div className="text-base sm:text-2xl font-bold">{totalTransactions}</div>
           </div>
-          <div className="p-4 rounded-lg bg-muted/50 col-span-2 sm:col-span-1">
-            <div className="text-sm text-muted-foreground">Ticket Promedio</div>
-            <div className="text-2xl font-bold">
+          <div className="p-2 sm:p-4 rounded-lg bg-muted/50 col-span-2 sm:col-span-1">
+            <div className="text-xs sm:text-sm text-muted-foreground">Ticket Promedio</div>
+            <div className="text-base sm:text-2xl font-bold truncate">
               {totalTransactions > 0 ? formatNumber(totalRevenue / totalTransactions, '$') : formatNumber(0, '$')}
             </div>
           </div>
@@ -145,25 +145,25 @@ export function PaymentMethodsReport({ dateRange }: PaymentMethodsReportProps) {
           <Accordion type="single" collapsible className="w-full">
             {paymentData.map((data) => (
               <AccordionItem key={data.method} value={data.method}>
-                <AccordionTrigger className="hover:no-underline">
-                  <div className="flex items-center justify-between w-full pr-4">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("p-2 rounded-lg", paymentMethodColors[data.method])}>
+                <AccordionTrigger className="hover:no-underline px-2 sm:px-4">
+                  <div className="flex items-center justify-between w-full pr-2 sm:pr-4 gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                      <div className={cn("p-1.5 sm:p-2 rounded-lg flex-shrink-0", paymentMethodColors[data.method])}>
                         {data.icon}
                       </div>
-                      <div className="text-left">
-                        <div className="font-semibold">{data.label}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {data.transactionCount} transacciones
+                      <div className="text-left min-w-0">
+                        <div className="font-semibold text-sm sm:text-base">{data.label}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {data.transactionCount} trans.
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <Badge variant="secondary" className="font-mono">
+                    <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                      <Badge variant="secondary" className="font-mono text-xs hidden sm:flex">
                         {data.percentage.toFixed(1)}%
                       </Badge>
                       <div className="text-right">
-                        <div className="font-bold text-lg">{formatNumber(data.totalAmount, '$')}</div>
+                        <div className="font-bold text-sm sm:text-lg truncate">{formatNumber(data.totalAmount, '$')}</div>
                       </div>
                     </div>
                   </div>
@@ -174,30 +174,30 @@ export function PaymentMethodsReport({ dateRange }: PaymentMethodsReportProps) {
                       No hay productos vendidos con este método
                     </div>
                   ) : (
-                    <div className="rounded-md border mt-2">
+                    <div className="rounded-md border mt-2 overflow-x-auto">
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Fecha</TableHead>
-                            <TableHead>Producto</TableHead>
-                            <TableHead className="text-center">Cantidad</TableHead>
-                            <TableHead className="text-right">Ingresos</TableHead>
-                            <TableHead className="text-right">% del Método</TableHead>
+                            <TableHead className="text-xs whitespace-nowrap">Fecha</TableHead>
+                            <TableHead className="text-xs">Producto</TableHead>
+                            <TableHead className="text-xs text-center">Cant.</TableHead>
+                            <TableHead className="text-xs text-right">Ingresos</TableHead>
+                            <TableHead className="text-xs text-right hidden sm:table-cell">%</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {data.products.map((product, index) => (
                             <TableRow key={`${data.method}-${product.name}-${index}`}>
-                              <TableCell className="text-muted-foreground font-mono text-xs">
-                                {format(product.date, 'dd/MM/yy HH:mm', { locale: es })}
+                              <TableCell className="text-muted-foreground font-mono text-xs whitespace-nowrap py-2">
+                                {format(product.date, 'dd/MM HH:mm', { locale: es })}
                               </TableCell>
-                              <TableCell className="font-medium">{product.name}</TableCell>
-                              <TableCell className="text-center">{product.quantity}</TableCell>
-                              <TableCell className="text-right font-mono">
+                              <TableCell className="font-medium text-xs py-2 max-w-[100px] truncate">{product.name}</TableCell>
+                              <TableCell className="text-center text-xs py-2">{product.quantity}</TableCell>
+                              <TableCell className="text-right font-mono text-xs py-2">
                                 {formatNumber(product.revenue, '$')}
                               </TableCell>
-                              <TableCell className="text-right">
-                                <Badge variant="outline" className="font-mono">
+                              <TableCell className="text-right hidden sm:table-cell py-2">
+                                <Badge variant="outline" className="font-mono text-xs">
                                   {data.totalAmount > 0 
                                     ? ((product.revenue / data.totalAmount) * 100).toFixed(1) 
                                     : 0}%

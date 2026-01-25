@@ -33,58 +33,58 @@ export function StatsCards({ dateRange }: StatsCardsProps) {
   const avgTransaction = periodSales.length > 0 ? periodRevenue / periodSales.length : 0;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
+    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Revenue</CardTitle>
+          <DollarSign className="h-4 w-4 text-muted-foreground flex-shrink-0" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-success">{formatNumber(periodRevenue, '$')}</div>
-          <p className="text-xs text-muted-foreground">
-            {periodTransactions} transactions in period
+          <div className="text-lg sm:text-2xl font-bold text-success truncate">{formatNumber(periodRevenue, '$')}</div>
+          <p className="text-xs text-muted-foreground truncate">
+            {periodTransactions} transactions
           </p>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium truncate">Total Revenue (All Time)</CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Total (All Time)</CardTitle>
+          <TrendingUp className="h-4 w-4 text-muted-foreground flex-shrink-0" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatNumber(totalRevenue, '$')}</div>
-          <p className="text-xs text-muted-foreground">
+          <div className="text-lg sm:text-2xl font-bold truncate">{formatNumber(totalRevenue, '$')}</div>
+          <p className="text-xs text-muted-foreground truncate">
             {sales.length} total transactions
           </p>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium truncate">Avg Transaction</CardTitle>
-          <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Avg Transaction</CardTitle>
+          <ShoppingCart className="h-4 w-4 text-muted-foreground flex-shrink-0" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatNumber(avgTransaction, '$')}</div>
-          <p className="text-xs text-muted-foreground">
+          <div className="text-lg sm:text-2xl font-bold truncate">{formatNumber(avgTransaction, '$')}</div>
+          <p className="text-xs text-muted-foreground truncate">
             Average for period
           </p>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Inventory Alerts</CardTitle>
-          <AlertTriangle className="h-4 w-4 text-warning" />
+          <CardTitle className="text-xs sm:text-sm font-medium truncate">Inventory Alerts</CardTitle>
+          <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-warning">{lowStockItems.length}</div>
-          <p className="text-xs text-muted-foreground">
+          <div className="text-lg sm:text-2xl font-bold text-warning">{lowStockItems.length}</div>
+          <p className="text-xs text-muted-foreground truncate">
             Items need restocking
           </p>
           {lowStockItems.length > 0 && (
-            <Badge variant="outline" className="mt-2 text-warning border-warning">
+            <Badge variant="outline" className="mt-2 text-warning border-warning text-xs">
               <Package className="h-3 w-3 mr-1" />
               Low Stock
             </Badge>
