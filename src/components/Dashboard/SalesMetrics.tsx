@@ -69,61 +69,61 @@ export function SalesMetrics({ sales, dateRange }: SalesMetricsProps) {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="today" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="today">Hoy</TabsTrigger>
-            <TabsTrigger value="week">Semana</TabsTrigger>
-            <TabsTrigger value="month">Mes</TabsTrigger>
-            <TabsTrigger value="range">Rango</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 h-auto">
+            <TabsTrigger value="today" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Hoy</TabsTrigger>
+            <TabsTrigger value="week" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Semana</TabsTrigger>
+            <TabsTrigger value="month" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Mes</TabsTrigger>
+            <TabsTrigger value="range" className="text-xs sm:text-sm px-1 sm:px-3 py-1.5">Rango</TabsTrigger>
           </TabsList>
           
           <TabsContent value="today" className="space-y-4 mt-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold text-primary">{formatNumber(metrics.today.total, '$')}</p>
-                <p className="text-sm text-muted-foreground">Total vendido</p>
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+              <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+                <p className="text-base sm:text-2xl font-bold text-primary truncate">{formatNumber(metrics.today.total, '$')}</p>
+                <p className="text-xs text-muted-foreground">Total vendido</p>
               </div>
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold">{metrics.today.transactions}</p>
-                <p className="text-sm text-muted-foreground">Transacciones</p>
+              <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+                <p className="text-base sm:text-2xl font-bold">{metrics.today.transactions}</p>
+                <p className="text-xs text-muted-foreground">Transacciones</p>
               </div>
             </div>
           </TabsContent>
           
           <TabsContent value="week" className="space-y-4 mt-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold text-primary">{formatNumber(metrics.week.total, '$')}</p>
-                <p className="text-sm text-muted-foreground">Total vendido</p>
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+              <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+                <p className="text-base sm:text-2xl font-bold text-primary truncate">{formatNumber(metrics.week.total, '$')}</p>
+                <p className="text-xs text-muted-foreground">Total vendido</p>
               </div>
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold">{metrics.week.transactions}</p>
-                <p className="text-sm text-muted-foreground">Transacciones</p>
+              <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+                <p className="text-base sm:text-2xl font-bold">{metrics.week.transactions}</p>
+                <p className="text-xs text-muted-foreground">Transacciones</p>
               </div>
             </div>
           </TabsContent>
           
           <TabsContent value="month" className="space-y-4 mt-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold text-primary">{formatNumber(metrics.month.total, '$')}</p>
-                <p className="text-sm text-muted-foreground">Total vendido</p>
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+              <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+                <p className="text-base sm:text-2xl font-bold text-primary truncate">{formatNumber(metrics.month.total, '$')}</p>
+                <p className="text-xs text-muted-foreground">Total vendido</p>
               </div>
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold">{metrics.month.transactions}</p>
-                <p className="text-sm text-muted-foreground">Transacciones</p>
+              <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+                <p className="text-base sm:text-2xl font-bold">{metrics.month.transactions}</p>
+                <p className="text-xs text-muted-foreground">Transacciones</p>
               </div>
             </div>
           </TabsContent>
           
           <TabsContent value="range" className="space-y-4 mt-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold text-primary">{formatNumber(metrics.range.total, '$')}</p>
-                <p className="text-sm text-muted-foreground">Total vendido</p>
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+              <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+                <p className="text-base sm:text-2xl font-bold text-primary truncate">{formatNumber(metrics.range.total, '$')}</p>
+                <p className="text-xs text-muted-foreground">Total vendido</p>
               </div>
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-2xl font-bold">{metrics.range.transactions}</p>
-                <p className="text-sm text-muted-foreground">Transacciones</p>
+              <div className="text-center p-2 sm:p-4 bg-muted rounded-lg">
+                <p className="text-base sm:text-2xl font-bold">{metrics.range.transactions}</p>
+                <p className="text-xs text-muted-foreground">Transacciones</p>
               </div>
             </div>
           </TabsContent>

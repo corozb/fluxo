@@ -92,16 +92,18 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <POSHeader onNavigate={onNavigate} currentPage="dashboard" />
       
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-            <div className="flex items-center gap-2 text-muted-foreground mt-1">
-               <p>Resumen del rendimiento de tu tienda</p>
-               <DashboardControls />
+      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 sm:p-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="min-w-0">
+              <h2 className="text-xl sm:text-3xl font-bold tracking-tight truncate">Dashboard</h2>
+              <div className="flex items-center gap-2 text-muted-foreground mt-1">
+                <p className="text-xs sm:text-base truncate">Resumen del rendimiento de tu tienda</p>
+                <DashboardControls />
+              </div>
             </div>
+            <DateRangeFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
           </div>
-          <DateRangeFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
         </div>
       </div>
       
