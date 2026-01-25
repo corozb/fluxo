@@ -10,8 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { BarChart3, Settings, LogOut, User } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { BarChart3, Settings, LogOut, User, Moon, Sun } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import { SaleDatePicker } from '@/components/POS/SaleDatePicker';
 
 interface POSHeaderProps {
@@ -21,6 +21,7 @@ interface POSHeaderProps {
 
 export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
   const { currentUser, logout } = usePOSStore();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -64,7 +65,6 @@ export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
       </div>
 
       <div className="flex items-center space-x-2 sm:space-x-4">
-        <ThemeToggle />
         <div className="text-right">
           {currentPage === 'pos' && <SaleDatePicker />}
         </div>
@@ -95,6 +95,14 @@ export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={toggleTheme}>
+              {theme === 'light' ? (
+                <Moon className="mr-2 h-4 w-4" />
+              ) : (
+                <Sun className="mr-2 h-4 w-4" />
+              )}
+              <span>{theme === 'light' ? 'Modo oscuro' : 'Modo claro'}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="text-destructive">
