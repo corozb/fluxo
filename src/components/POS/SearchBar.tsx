@@ -2,29 +2,18 @@ import { useState } from 'react';
 import { usePOSStore } from '@/stores/posStore';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, X, ScanBarcode } from 'lucide-react';
 import { BarcodeScanner } from './BarcodeScanner';
 import { CategoryDropdown } from './CategoryDropdown';
+import { CategoryFilterDropdown } from './CategoryFilterDropdown';
 
 export function SearchBar() {
-  const {
-    searchQuery,
-    selectedCategory,
-    products,
-    setSearchQuery,
-    setSelectedCategory
-  } = usePOSStore();
-
+  const { searchQuery, setSearchQuery } = usePOSStore();
   const [isScannerOpen, setIsScannerOpen] = useState(false);
-
-  // Get unique categories
-  const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
   return (
     <div className="bg-pos-header">
-      <div className="flex items-center space-x-2 mb-4">
+      <div className="flex items-center space-x-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -52,23 +41,9 @@ export function SearchBar() {
         >
           <ScanBarcode className="h-4 w-4" />
         </Button>
+        <CategoryFilterDropdown />
         <CategoryDropdown />
       </div>
-
-      <ScrollArea className="w-full">
-        <div className="flex space-x-2 pb-2">
-          {categories.map((category) => (
-            <Badge
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              className="cursor-pointer whitespace-nowrap"
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </Badge>
-          ))}
-        </div>
-      </ScrollArea>
 
       <BarcodeScanner 
         isOpen={isScannerOpen} 
