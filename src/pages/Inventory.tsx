@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { formatNumber } from '@/lib/utils';
 import { usePOSStore } from '@/stores/posStore';
+import { useCategoriesStore } from '@/stores/categoriesStore';
 import { POSHeader } from '@/components/POS/POSHeader';
 import { ProductForm } from '@/components/Inventory/ProductForm';
 import { CategoryManager } from '@/components/Inventory/CategoryManager';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -31,20 +33,54 @@ interface InventoryProps {
 
 export function Inventory({ onNavigate }: InventoryProps) {
   const { products, deleteProduct, currentUser } = usePOSStore();
+  const { categories } = useCategoriesStore();
   const { toast } = useToast();
   
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
   const isAdmin = currentUser?.role === 'admin';
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (product.barcode && product.barcode.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Calculate product counts per category
+  const categoryProductCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: products.length };
+    products.forEach(product => {
+      counts[product.category] = (counts[product.category] || 0) + 1;
+    });
+    return counts;
+  }, [products]);
+
+  // Get categories with their counts
+  const categoriesWithCounts = useMemo(() => {
+    return ['All', ...categories].map(category => ({
+      name: category,
+      count: categoryProductCounts[category] || 0
+    }));
+  }, [categories, categoryProductCounts]);
+
+  const filteredProducts = useMemo(() => {
+    let filtered = products;
+    
+    // Filter by category
+    if (selectedCategory !== 'All') {
+      filtered = filtered.filter(product => product.category === selectedCategory);
+    }
+    
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        product.category.toLowerCase().includes(query) ||
+        (product.barcode && product.barcode.toLowerCase().includes(query))
+      );
+    }
+    
+    return filtered;
+  }, [products, selectedCategory, searchQuery]);
 
   const lowStockProducts = products.filter(p => p.stock <= p.lowStockThreshold);
 
@@ -103,6 +139,26 @@ export function Inventory({ onNavigate }: InventoryProps) {
             />
           </div>
         </div>
+
+        {/* Category filter tabs */}
+        <ScrollArea className="w-full">
+          <div className="flex space-x-2 pb-2">
+            {categoriesWithCounts.map(({ name, count }) => (
+              <Badge
+                key={name}
+                variant={selectedCategory === name ? "default" : "outline"}
+                className="cursor-pointer whitespace-nowrap px-3 py-1.5 text-sm"
+                onClick={() => setSelectedCategory(name)}
+              >
+                {name === 'All' ? 'Todos' : name}
+                <span className="ml-1.5 rounded-full bg-background/20 px-1.5 py-0.5 text-xs">
+                  {count}
+                </span>
+              </Badge>
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
 
       <div className="flex-1 overflow-auto p-6">

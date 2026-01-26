@@ -21,11 +21,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface ProductFormProps {
   isOpen: boolean;
   onClose: () => void;
   product?: Product | null;
+}
+
+interface FormErrors {
+  name?: boolean;
+  price?: boolean;
+  category?: boolean;
+  stock?: boolean;
 }
 
 export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
@@ -43,6 +51,9 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
     description: '',
     barcode: ''
   });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (product) {
@@ -68,12 +79,28 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
         barcode: ''
       });
     }
+    setErrors({});
+    setTouched({});
   }, [product, isOpen]);
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    
+    if (!formData.name.trim()) newErrors.name = true;
+    if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = true;
+    if (!formData.category) newErrors.category = true;
+    if (!formData.stock || parseInt(formData.stock) < 0) newErrors.stock = true;
+
+    setErrors(newErrors);
+    setTouched({ name: true, price: true, category: true, stock: true });
+    
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.price || !formData.category || !formData.stock) {
+    if (!validateForm()) {
       toast({
         title: "Error",
         description: "Por favor complete todos los campos requeridos",
@@ -112,6 +139,28 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    if (touched[field]) {
+      // Clear error when user starts typing
+      setErrors(prev => ({ ...prev, [field]: false }));
+    }
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    // Validate on blur
+    if (field === 'name' && !formData.name.trim()) {
+      setErrors(prev => ({ ...prev, name: true }));
+    } else if (field === 'price' && (!formData.price || parseFloat(formData.price) <= 0)) {
+      setErrors(prev => ({ ...prev, price: true }));
+    } else if (field === 'category' && !formData.category) {
+      setErrors(prev => ({ ...prev, category: true }));
+    } else if (field === 'stock' && (!formData.stock || parseInt(formData.stock) < 0)) {
+      setErrors(prev => ({ ...prev, stock: true }));
+    }
+  };
+
+  const getFieldError = (field: keyof FormErrors) => {
+    return errors[field] && touched[field];
   };
 
   return (
@@ -129,20 +178,21 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
+              <Label htmlFor="name" className={cn("text-right", getFieldError('name') && "text-destructive")}>
                 Nombre *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleChange('name', e.target.value)}
-                className="col-span-3"
+                onBlur={() => handleBlur('name')}
+                className={cn("col-span-3", getFieldError('name') && "border-destructive ring-destructive focus-visible:ring-destructive")}
                 required
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="price" className="text-right">
+              <Label htmlFor="price" className={cn("text-right", getFieldError('price') && "text-destructive")}>
                 Precio *
               </Label>
               <Input
@@ -152,7 +202,8 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
                 min="0"
                 value={formData.price}
                 onChange={(e) => handleChange('price', e.target.value)}
-                className="col-span-3"
+                onBlur={() => handleBlur('price')}
+                className={cn("col-span-3", getFieldError('price') && "border-destructive ring-destructive focus-visible:ring-destructive")}
                 placeholder="0.00"
                 required
               />
@@ -175,14 +226,18 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="category" className="text-right">
+              <Label htmlFor="category" className={cn("text-right", getFieldError('category') && "text-destructive")}>
                 Categoría *
               </Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => handleChange('category', value)}
+                onValueChange={(value) => {
+                  handleChange('category', value);
+                  setTouched(prev => ({ ...prev, category: true }));
+                  setErrors(prev => ({ ...prev, category: false }));
+                }}
               >
-                <SelectTrigger className="col-span-3">
+                <SelectTrigger className={cn("col-span-3", getFieldError('category') && "border-destructive ring-destructive focus-visible:ring-destructive")}>
                   <SelectValue placeholder="Seleccionar categoría" />
                 </SelectTrigger>
                 <SelectContent>
@@ -196,7 +251,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="stock" className="text-right">
+              <Label htmlFor="stock" className={cn("text-right", getFieldError('stock') && "text-destructive")}>
                 Stock *
               </Label>
               <Input
@@ -205,7 +260,8 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
                 min="0"
                 value={formData.stock}
                 onChange={(e) => handleChange('stock', e.target.value)}
-                className="col-span-3"
+                onBlur={() => handleBlur('stock')}
+                className={cn("col-span-3", getFieldError('stock') && "border-destructive ring-destructive focus-visible:ring-destructive")}
                 required
               />
             </div>
