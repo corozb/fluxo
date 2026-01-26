@@ -53,13 +53,19 @@ export function Inventory({ onNavigate }: InventoryProps) {
     return counts;
   }, [products]);
 
-  // Get categories with their counts
+  // Get categories with their counts (only categories with products)
   const categoriesWithCounts = useMemo(() => {
-    return ['All', ...categories].map(category => ({
-      name: category,
-      count: categoryProductCounts[category] || 0
-    }));
-  }, [categories, categoryProductCounts]);
+    const categoriesWithProducts = categories.filter(
+      category => (categoryProductCounts[category] || 0) > 0
+    );
+    return [
+      { name: 'All', count: products.length },
+      ...categoriesWithProducts.map(category => ({
+        name: category,
+        count: categoryProductCounts[category] || 0
+      }))
+    ];
+  }, [categories, categoryProductCounts, products.length]);
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
