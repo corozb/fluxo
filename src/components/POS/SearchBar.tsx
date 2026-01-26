@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, X, ScanBarcode } from 'lucide-react';
 import { BarcodeScanner } from './BarcodeScanner';
+import { CategoryDropdown } from './CategoryDropdown';
 
 export function SearchBar() {
   const {
@@ -51,6 +52,7 @@ export function SearchBar() {
         >
           <ScanBarcode className="h-4 w-4" />
         </Button>
+        <CategoryDropdown />
       </div>
 
       <ScrollArea className="w-full">
