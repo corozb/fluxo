@@ -34,7 +34,7 @@ export function MainApp() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-16 lg:pb-0">
+    <div className="min-h-screen bg-background">
       {currentPage === 'pos' && <POS onNavigate={handleNavigate} />}
       {currentPage === 'dashboard' && <Dashboard onNavigate={handleNavigate} />}
       {currentPage === 'inventory' && <Inventory onNavigate={handleNavigate} />}
