@@ -38,7 +38,6 @@ export function SearchBar() {
           size="icon"
           onClick={() => setIsScannerOpen(true)}
           title="Escanear código de barras"
-          className="hidden lg:flex"
         >
           <ScanBarcode className="h-4 w-4" />
         </Button>
