@@ -107,7 +107,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         </div>
       </div>
       
-      <div className="flex-1 overflow-auto p-6 pb-20 lg:pb-6">
+      <div className="flex-1 overflow-auto p-6 pb-24 lg:pb-6">
         <DndContext 
           sensors={sensors} 
           collisionDetection={closestCenter} 
