@@ -9,171 +9,160 @@
 
 @layer base {
   :root {
-    /* Modern Purple/Navy Design System - Inspired by Financial Apps */
-    --background: 240 4% 95%;      /* Light gray background */
-    --foreground: 240 5% 10%;         /* Dark slate text */
+    /* Coral/Salmon POS Design System - Soft Neumorphic Style */
+    --background: 220 20% 97%;      /* Very light gray-blue background */
+    --foreground: 220 15% 20%;      /* Dark slate text */
 
-    /* Cards and surfaces - Glassmorphism (Semi-transparent) */
-    --card: 0 0% 100% / 0.7;            /* White with opacity */
-    --card-foreground: 240 5% 10%;    /* Dark text on cards */
+    /* Cards and surfaces - Soft white */
+    --card: 0 0% 100%;              /* Pure white cards */
+    --card-foreground: 220 15% 20%;
 
-    --popover: 0 0% 100% / 0.8;
-    --popover-foreground: 240 5% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 20%;
 
-    /* Primary - Deep Navy/Purple */
-    --primary: 258 89% 66%;         /* Deep navy #2D1B69 inspired */
-    --primary-foreground: 250 100% 97%;
-    --primary-hover: 250 15% 18%;   /* Darker on hover */
+    /* Primary - Coral/Salmon */
+    --primary: 5 65% 65%;           /* Coral #E57373 inspired */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 5 65% 58%;     /* Darker coral on hover */
 
-    /* Secondary - Light purple tint */
-    --secondary: 240 5% 96% / 0.5;        /* Very light purple-gray */
-    --secondary-foreground: 240 5% 10%;
+    /* Secondary - Light gray */
+    --secondary: 220 15% 94%;
+    --secondary-foreground: 220 15% 30%;
 
-    /* Success - Modern green */
-    --success: 142 76% 36%;         /* Professional green */
-    --success-foreground: 255 255 255;
-    --success-light: 142 76% 45%;   
+    /* Success - Soft green */
+    --success: 142 50% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 50% 55%;   
 
     /* Warning - Warm amber */
-    --warning: 25 95% 53%;          
-    --warning-foreground: 255 255 255;
+    --warning: 35 85% 55%;          
+    --warning-foreground: 0 0% 100%;
 
     /* Muted colors */
-    --muted: 240 4% 83% / 0.5;            /* Light purple-gray */
-    --muted-foreground: 240 5% 40%; /* Medium gray */
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 10% 50%;
 
-    /* Accent - Vibrant Purple */
-    --accent: 269 100% 98% / 0.8;          /* Bright purple #8B5CF6 inspired */
-    --accent-foreground: 270 91% 65%;
+    /* Accent - Light coral tint */
+    --accent: 5 40% 96%;
+    --accent-foreground: 5 65% 55%;
 
     /* Destructive */
-    --destructive: 0 72% 50%;       
-    --destructive-foreground: 0 85% 97%;
+    --destructive: 0 65% 55%;       
+    --destructive-foreground: 0 0% 100%;
 
     /* Borders and inputs */
-    --border: 240 4% 83% / 0.6;          /* Light purple-gray border */
-    --input: 240 4% 83% / 0.6;           
-    --ring: 258 89% 66%;            /* Matches accent */
+    --border: 220 15% 88%;
+    --input: 220 15% 92%;           
+    --ring: 5 65% 65%;
 
     /* POS specific colors */
-    --pos-sidebar: 250 11% 22% / 0.9;     /* Deep navy */
-    --pos-sidebar-foreground: 248 250 252;
-    --pos-header: 255 255 255 / 0.8;      /* Pure white */
-    --pos-total: 142 76% 36%;       /* Success green for totals */
+    --pos-sidebar: 220 15% 25%;
+    --pos-sidebar-foreground: 0 0% 98%;
+    --pos-header: 0 0% 100%;
+    --pos-total: 5 65% 65%;
 
-    /* Modern gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(250 11% 22%), hsl(250 15% 18%));
-    --gradient-accent: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 68%));
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 45%));
-    --gradient-card: linear-gradient(145deg, hsl(255 255 255 / 0.8), hsl(240 5% 98% / 0.6));
+    /* Soft shadows for neumorphic look */
+    --shadow-sm: 8px 8px 16px hsl(220 15% 85%), -8px -8px 16px hsl(0 0% 100%);
+    --shadow-md: 10px 10px 20px hsl(220 15% 85%), -10px -10px 20px hsl(0 0% 100%);
+    --shadow-lg: 15px 15px 30px hsl(220 15% 82%), -15px -15px 30px hsl(0 0% 100%);
+    --shadow-xl: 20px 20px 40px hsl(220 15% 80%), -20px -20px 40px hsl(0 0% 100%);
 
-    /* Soft shadows for modern look */
-    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
+    --radius: 1rem; /* More rounded for soft feel */
 
-    --radius: 0.75rem; /* Slightly more rounded for glass feel */
+    --chart-1: 5 65% 65%;
+    --chart-2: 5 50% 75%;
+    --chart-3: 200 60% 60%;
+    --chart-4: 220 50% 60%;
+    --chart-5: 220 15% 50%;
 
-    --chart-1: 255 91% 76%;
-    --chart-2: 270 95% 75%;
-    --chart-3: 234 89% 73%;
-    --chart-4: 258 89% 66%;
-    --chart-5: 240 3% 46%;
-
-    --sidebar: 0 0% 98% / 0.8;
-    --sidebar-foreground: 240 5% 10%;
-    --sidebar-primary: 258 89% 66%;
-    --sidebar-primary-foreground: 250 100% 97%;
-    --sidebar-accent: 240 5% 33% / 0.1;
-    --sidebar-accent-foreground: 240 5% 10%;
-    --sidebar-border: 240 4% 83% / 0.6;
-    --sidebar-ring: 258 89% 66%;
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 220 15% 20%;
+    --sidebar-primary: 5 65% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 5 40% 96%;
+    --sidebar-accent-foreground: 5 65% 55%;
+    --sidebar-border: 220 15% 88%;
+    --sidebar-ring: 5 65% 65%;
 
     --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
     --font-serif: 'Cormorant Garamond', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
     --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
-    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    --shadow-2xs: 4px 4px 8px hsl(220 15% 88%), -4px -4px 8px hsl(0 0% 100%);
+    --shadow-xs: 6px 6px 12px hsl(220 15% 87%), -6px -6px 12px hsl(0 0% 100%);
+    --shadow: 8px 8px 16px hsl(220 15% 85%), -8px -8px 16px hsl(0 0% 100%);
+    --shadow-2xl: 25px 25px 50px hsl(220 15% 78%), -25px -25px 50px hsl(0 0% 100%);
 
     --tracking-normal: 0em;
     --spacing: 0.25rem;
   }
 
   .dark {
-    /* Dark mode - Modern Navy/Purple theme - Glassmorphism */
-    --background: 240 5% 10%;         /* Dark navy background */
-    --foreground: 0 0% 98%;      /* Light text */
+    /* Dark mode - Coral/Salmon theme */
+    --background: 220 20% 12%;
+    --foreground: 0 0% 95%;
 
-    --card: 240 3% 15% / 0.6;            /* Deep navy cards with opacity */
-    --card-foreground: 0 0% 98%; 
+    --card: 220 18% 16%;
+    --card-foreground: 0 0% 95%; 
 
-    --popover: 240 5% 15% / 0.8;
-    --popover-foreground: 0 0% 98%;
+    --popover: 220 18% 18%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 255 91% 76%;         /* Bright purple in dark mode */
-    --primary-foreground: 261 72% 22%; 
-    --primary-hover: 262 83% 68%;
+    --primary: 5 60% 60%;
+    --primary-foreground: 0 0% 100%; 
+    --primary-hover: 5 60% 55%;
 
-    --secondary: 240 3% 46% / 0.4;          /* Medium slate */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 220 15% 22%;
+    --secondary-foreground: 0 0% 90%;
 
-    --success: 142 76% 45%;         
-    --success-foreground: 15 23 42;
-    --success-light: 142 76% 55%;
+    --success: 142 50% 50%;         
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 50% 60%;
 
-    --warning: 25 95% 63%;          
-    --warning-foreground: 15 23 42;
+    --warning: 35 80% 55%;          
+    --warning-foreground: 0 0% 100%;
 
-    --muted: 240 3% 46% / 0.4;              
-    --muted-foreground: 240 5% 80%; 
+    --muted: 220 15% 25%;              
+    --muted-foreground: 220 10% 65%; 
 
-    --accent: 273 86% 20% / 0.6;          /* Brighter purple */
-    --accent-foreground: 270 95% 75%;
+    --accent: 5 30% 22%;
+    --accent-foreground: 5 60% 70%;
 
-    --destructive: 0 84% 60%;       
-    --destructive-foreground: 0 85% 97%;
+    --destructive: 0 60% 50%;       
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 5% 33% / 0.4;          
-    --input: 240 5% 33% / 0.4;
-    --ring: 255 91% 76%;
+    --border: 220 15% 25%;          
+    --input: 220 15% 22%;
+    --ring: 5 60% 60%;
 
-    --pos-sidebar: 15 23 42 / 0.9;        
-    --pos-sidebar-foreground: 248 250 252;
-    --pos-header: 250 11% 22% / 0.8;      
-    --pos-total: 142 76% 45%;
-
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 68%));
-    --gradient-accent: linear-gradient(135deg, hsl(262 83% 68%), hsl(262 83% 78%));
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 45%), hsl(142 76% 55%));
-    /* --gradient-card: linear-gradient(145deg, hsl(250 11% 22% / 0.7), hsl(30 41 59 / 0.3)); */
+    --pos-sidebar: 220 18% 14%;        
+    --pos-sidebar-foreground: 0 0% 95%;
+    --pos-header: 220 18% 16%;      
+    --pos-total: 5 60% 60%;
     
-    --chart-1: 252 94% 85%;
-    --chart-2: 269 97% 85%;
-    --chart-3: 229 93% 81%;
-    --chart-4: 255 91% 76%;
-    --chart-5: 240 3% 46%;
+    --chart-1: 5 60% 65%;
+    --chart-2: 5 45% 70%;
+    --chart-3: 200 55% 55%;
+    --chart-4: 220 45% 55%;
+    --chart-5: 220 15% 55%;
     
-    --sidebar: 240 3% 15% / 0.7;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 255 91% 76%;
-    --sidebar-primary-foreground: 261 72% 22%;
-    --sidebar-accent: 270 95% 75% / 0.1;
-    --sidebar-accent-foreground: 273 86% 20%;
-    --sidebar-border: 240 5% 33% / 0.4;
-    --sidebar-ring: 255 91% 76%;
+    --sidebar: 220 18% 14%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 5 60% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 5 30% 22%;
+    --sidebar-accent-foreground: 5 60% 70%;
+    --sidebar-border: 220 15% 25%;
+    --sidebar-ring: 5 60% 60%;
     
-    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.3);
+    --shadow-xs: 0 2px 4px 0px hsl(0 0% 0% / 0.3);
+    --shadow-sm: 0 2px 6px 0px hsl(0 0% 0% / 0.35);
+    --shadow: 0 4px 8px 0px hsl(0 0% 0% / 0.35);
+    --shadow-md: 0 6px 12px 0px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 10px 20px 0px hsl(0 0% 0% / 0.4);
+    --shadow-xl: 0 15px 30px 0px hsl(0 0% 0% / 0.45);
+    --shadow-2xl: 0 20px 40px 0px hsl(0 0% 0% / 0.5);
   }
 }
 
@@ -189,33 +178,38 @@
 }
 
 @layer components {
-  /* Enhanced Glass Utilities */
+  /* Soft Neumorphic Utilities */
   .glass {
-    @apply bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg;
+    @apply bg-card border-none shadow-md;
   }
   
   .glass-card {
-    @apply bg-card backdrop-blur-md border border-border shadow-sm hover:shadow-md transition-all duration-300;
+    @apply bg-card border-none rounded-2xl shadow-md hover:shadow-lg transition-all duration-300;
   }
 
   .glass-panel {
-    @apply bg-card/80 backdrop-blur-xl border-border;
+    @apply bg-card border-none rounded-2xl;
   }
 
   .glass-header {
-    @apply bg-background/60 backdrop-blur-lg border-b border-border sticky top-0 z-50;
+    @apply bg-background border-b border-border/50 sticky top-0 z-50;
   }
 
-  /* Apply glass effect to common shadcn components automatically if needed */
+  /* Soft card style */
   .card {
-     @apply backdrop-blur-md bg-card border-border;
+     @apply bg-card border-none rounded-2xl shadow-md;
   }
   
   .popover-content {
-    @apply backdrop-blur-xl bg-popover border-border;
+    @apply bg-popover border-none rounded-xl shadow-lg;
   }
   
   .dialog-content {
-    @apply backdrop-blur-xl bg-background/90 border-border;
+    @apply bg-background border-none rounded-2xl shadow-xl;
+  }
+  
+  /* Soft input style */
+  .soft-input {
+    @apply bg-secondary border-none rounded-xl shadow-inner;
   }
 }
