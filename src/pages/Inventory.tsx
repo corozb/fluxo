@@ -8,7 +8,7 @@ import { CategoryManager } from '@/components/Inventory/CategoryManager';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+
 import {
   Table,
   TableBody,
@@ -147,13 +147,13 @@ export function Inventory({ onNavigate }: InventoryProps) {
         </div>
 
         {/* Category filter tabs */}
-        <ScrollArea className="w-full">
-          <div className="flex space-x-2 pb-2">
+        <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent touch-pan-x cursor-grab active:cursor-grabbing">
+          <div className="flex space-x-2 pb-2 min-w-min">
             {categoriesWithCounts.map(({ name, count }) => (
               <Badge
                 key={name}
                 variant={selectedCategory === name ? "default" : "outline"}
-                className="cursor-pointer whitespace-nowrap px-3 py-1.5 text-sm"
+                className="cursor-pointer whitespace-nowrap px-3 py-1.5 text-sm flex-shrink-0"
                 onClick={() => setSelectedCategory(name)}
               >
                 {name === 'All' ? 'Todos' : name}
@@ -163,8 +163,7 @@ export function Inventory({ onNavigate }: InventoryProps) {
               </Badge>
             ))}
           </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+        </div>
       </div>
 
       <div className="flex-1 overflow-auto p-6 pb-24 lg:pb-6">
