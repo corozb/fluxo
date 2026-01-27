@@ -38,14 +38,23 @@ export function SearchBar() {
           size="icon"
           onClick={() => setIsScannerOpen(true)}
           title="Escanear código de barras"
+          className="hidden lg:flex"
         >
           <ScanBarcode className="h-4 w-4" />
         </Button>
+        <div className="hidden lg:flex items-center gap-2">
+          <CategoryFilterDropdown />
+          <CategoryDropdown />
+        </div>
+      </div>
+      
+      {/* Mobile: Category filter below search */}
+      <div className="flex lg:hidden items-center gap-2 mt-2">
         <CategoryFilterDropdown />
         <CategoryDropdown />
       </div>
 
-      <BarcodeScanner 
+      <BarcodeScanner
         isOpen={isScannerOpen} 
         onClose={() => setIsScannerOpen(false)} 
       />

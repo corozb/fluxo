@@ -13,12 +13,10 @@ export function POS({ onNavigate }: POSProps) {
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <POSHeader onNavigate={onNavigate} currentPage="pos" />
       
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden pb-16 lg:pb-0">
         <div className="flex-1 flex flex-col">
-          <div className="flex items-center gap-4 p-4 border-b border-border">
-            <div className="flex-1">
-              <SearchBar />
-            </div>
+          <div className="p-4 border-b border-border">
+            <SearchBar />
           </div>
           <div className="flex-1 overflow-auto">
             <ProductGrid />
