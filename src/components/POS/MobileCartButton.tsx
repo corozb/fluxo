@@ -5,13 +5,24 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart } from 'lucide-react';
 import { MobileCartContent } from './MobileCartContent';
+import { useState, useEffect } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export function MobileCartButton() {
   const { cart, cartTotal } = usePOSStore();
+  const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useIsMobile();
+
+  // Close sheet when screen becomes desktop size
+  useEffect(() => {
+    if (!isMobile) {
+      setIsOpen(false);
+    }
+  }, [isMobile]);
 
   return (
     <div className="fixed bottom-20 right-4 z-50">
-      <Sheet>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button
             size="icon"
