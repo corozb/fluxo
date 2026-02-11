@@ -31,7 +31,7 @@ export function MobileCartContent() {
 
   const isAdmin = currentUser?.role === 'admin';
 
-  const handlePayment = async (method: 'cash' | 'card' | 'digital') => {
+  const handlePayment = async (method: 'cash' | 'card' | 'digital' | 'transfer') => {
     setIsProcessing(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
     const saleId = completeSale(method);
@@ -302,6 +302,16 @@ export function MobileCartContent() {
                 >
                   <DollarSign className="h-5 w-5 mr-2" />
                   {isProcessing ? 'Procesando...' : 'Pagar en Efectivo'}
+                </Button>
+
+                <Button
+                  variant="pos-success"
+                  className="w-full h-12 text-base"
+                  onClick={() => handlePayment('transfer')}
+                  disabled={isProcessing}
+                >
+                  <DollarSign className="h-5 w-5 mr-2" />
+                  {isProcessing ? 'Procesando...' : 'Pagar con Transferencia'}
                 </Button>
                 
                 <div className="grid grid-cols-2 gap-2">

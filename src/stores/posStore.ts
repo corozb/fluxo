@@ -27,7 +27,7 @@ export interface Sale {
   total: number;
   tax: number;
   discount: number;
-  paymentMethod: 'cash' | 'card' | 'digital';
+  paymentMethod: 'cash' | 'card' | 'digital' | 'transfer';
   timestamp: Date;
   cashierId: string;
   customerId?: string;
@@ -86,7 +86,7 @@ interface POSState {
   
   // Sales
   setSaleDate: (date: Date) => void;
-  completeSale: (paymentMethod: 'cash' | 'card' | 'digital', customerId?: string) => string;
+  completeSale: (paymentMethod: 'cash' | 'card' | 'digital' | 'transfer', customerId?: string) => string;
   
   // User
   login: (user: User) => void;

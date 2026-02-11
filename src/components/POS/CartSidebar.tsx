@@ -31,7 +31,7 @@ export function CartSidebar() {
 
   const isAdmin = currentUser?.role === 'admin';
 
-  const handlePayment = async (method: 'cash' | 'card' | 'digital') => {
+  const handlePayment = async (method: 'cash' | 'card' | 'digital' | 'transfer') => {
     setIsProcessing(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
     const saleId = completeSale(method);
@@ -298,6 +298,16 @@ export function CartSidebar() {
                 >
                   <DollarSign className="h-4 w-4 mr-2" />
                   {isProcessing ? 'Procesando...' : 'Pagar en Efectivo'}
+                </Button>
+
+                <Button
+                  variant="pos-success"
+                  className="w-full"
+                  onClick={() => handlePayment('transfer')}
+                  disabled={isProcessing}
+                >
+                  <DollarSign className="h-4 w-4 mr-2" />
+                  {isProcessing ? 'Procesando...' : 'Pagar con Transferencia'}
                 </Button>
                 
                 <Button
