@@ -30,11 +30,8 @@ import { useDashboardStore } from '@/stores/dashboardStore';
 import { SortableWidget } from '@/components/Dashboard/SortableWidget';
 import { DashboardControls } from '@/components/Dashboard/DashboardControls';
 
-interface DashboardProps {
-  onNavigate: (page: 'pos' | 'dashboard' | 'inventory') => void;
-}
-
-export function Dashboard({ onNavigate }: DashboardProps) {
+// Interface removed or empty
+export function Dashboard() {
   const { sales, products } = usePOSStore();
   const { layout, updateLayout, isEditMode, hiddenWidgets } = useDashboardStore();
   
@@ -90,7 +87,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
-      <POSHeader onNavigate={onNavigate} currentPage="dashboard" />
+      <POSHeader />
       
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 sm:p-6">
         <div className="flex flex-col gap-4">

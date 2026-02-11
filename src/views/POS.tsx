@@ -4,14 +4,11 @@ import { ProductGrid } from '@/components/POS/ProductGrid';
 import { CartSidebar } from '@/components/POS/CartSidebar';
 import { MobileCartButton } from '@/components/POS/MobileCartButton';
 
-interface POSProps {
-  onNavigate: (page: 'pos' | 'dashboard' | 'inventory') => void;
-}
-
-export function POS({ onNavigate }: POSProps) {
+// Interface removed or empty
+export function POS() {
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
-      <POSHeader onNavigate={onNavigate} currentPage="pos" />
+      <POSHeader />
       
       <div className="flex-1 flex overflow-hidden pb-16 lg:pb-0">
         <div className="flex-1 flex flex-col">

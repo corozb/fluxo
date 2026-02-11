@@ -27,11 +27,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Search, MoreHorizontal, Edit, Trash2, AlertTriangle, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-interface InventoryProps {
-  onNavigate: (page: 'pos' | 'dashboard' | 'inventory') => void;
-}
-
-export function Inventory({ onNavigate }: InventoryProps) {
+// Interface removed or empty
+export function Inventory() {
   const { products, deleteProduct, currentUser } = usePOSStore();
   const { categories } = useCategoriesStore();
   const { toast } = useToast();
@@ -110,7 +107,7 @@ export function Inventory({ onNavigate }: InventoryProps) {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
-      <POSHeader onNavigate={onNavigate} currentPage="inventory" />
+      <POSHeader />
       
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-4">

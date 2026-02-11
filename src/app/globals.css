@@ -1,0 +1,236 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Coral/Salmon POS Design System - Soft Neumorphic Style */
+    --background: 220 20% 97%;      /* Very light gray-blue background */
+    --foreground: 220 15% 20%;      /* Dark slate text */
+
+    /* Cards and surfaces - Soft white */
+    --card: 0 0% 100%;              /* Pure white cards */
+    --card-foreground: 220 15% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 20%;
+
+    /* Primary - Coral/Salmon */
+    --primary: 5 65% 65%;           /* Coral #E57373 inspired */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 5 65% 58%;     /* Darker coral on hover */
+
+    /* Secondary - Light gray */
+    --secondary: 220 15% 94%;
+    --secondary-foreground: 220 15% 30%;
+
+    /* Success - Soft green */
+    --success: 142 50% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 50% 55%;   
+
+    /* Warning - Warm amber */
+    --warning: 35 85% 55%;          
+    --warning-foreground: 0 0% 100%;
+
+    /* Muted colors */
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 10% 50%;
+
+    /* Accent - Light coral tint */
+    --accent: 5 40% 96%;
+    --accent-foreground: 5 65% 55%;
+
+    /* Destructive */
+    --destructive: 0 65% 55%;       
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders and inputs */
+    --border: 220 15% 88%;
+    --input: 220 15% 92%;           
+    --ring: 5 65% 65%;
+
+    /* POS specific colors */
+    --pos-sidebar: 220 15% 25%;
+    --pos-sidebar-foreground: 0 0% 98%;
+    --pos-header: 0 0% 100%;
+    --pos-total: 5 65% 65%;
+
+    /* Soft shadows for neumorphic look */
+    --shadow-sm: 8px 8px 16px hsl(220 15% 85%), -8px -8px 16px hsl(0 0% 100%);
+    --shadow-md: 10px 10px 20px hsl(220 15% 85%), -10px -10px 20px hsl(0 0% 100%);
+    --shadow-lg: 15px 15px 30px hsl(220 15% 82%), -15px -15px 30px hsl(0 0% 100%);
+    --shadow-xl: 20px 20px 40px hsl(220 15% 80%), -20px -20px 40px hsl(0 0% 100%);
+
+    --radius: 1rem; /* More rounded for soft feel */
+
+    --chart-1: 5 65% 65%;
+    --chart-2: 5 50% 75%;
+    --chart-3: 200 60% 60%;
+    --chart-4: 220 50% 60%;
+    --chart-5: 220 15% 50%;
+
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 220 15% 20%;
+    --sidebar-primary: 5 65% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 5 40% 96%;
+    --sidebar-accent-foreground: 5 65% 55%;
+    --sidebar-border: 220 15% 88%;
+    --sidebar-ring: 5 65% 65%;
+
+    --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    --font-serif: 'Cormorant Garamond', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+    --shadow-2xs: 4px 4px 8px hsl(220 15% 88%), -4px -4px 8px hsl(0 0% 100%);
+    --shadow-xs: 6px 6px 12px hsl(220 15% 87%), -6px -6px 12px hsl(0 0% 100%);
+    --shadow: 8px 8px 16px hsl(220 15% 85%), -8px -8px 16px hsl(0 0% 100%);
+    --shadow-2xl: 25px 25px 50px hsl(220 15% 78%), -25px -25px 50px hsl(0 0% 100%);
+
+    --tracking-normal: 0em;
+    --spacing: 0.25rem;
+  }
+
+  .dark {
+    /* Dark mode - Coral/Salmon theme */
+    --background: 220 20% 12%;
+    --foreground: 0 0% 95%;
+
+    --card: 220 18% 16%;
+    --card-foreground: 0 0% 95%; 
+
+    --popover: 220 18% 18%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 5 60% 60%;
+    --primary-foreground: 0 0% 100%; 
+    --primary-hover: 5 60% 55%;
+
+    --secondary: 220 15% 22%;
+    --secondary-foreground: 0 0% 90%;
+
+    --success: 142 50% 50%;         
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 50% 60%;
+
+    --warning: 35 80% 55%;          
+    --warning-foreground: 0 0% 100%;
+
+    --muted: 220 15% 25%;              
+    --muted-foreground: 220 10% 65%; 
+
+    --accent: 5 30% 22%;
+    --accent-foreground: 5 60% 70%;
+
+    --destructive: 0 60% 50%;       
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 25%;          
+    --input: 220 15% 22%;
+    --ring: 5 60% 60%;
+
+    --pos-sidebar: 220 18% 14%;        
+    --pos-sidebar-foreground: 0 0% 95%;
+    --pos-header: 220 18% 16%;      
+    --pos-total: 5 60% 60%;
+    
+    --chart-1: 5 60% 65%;
+    --chart-2: 5 45% 70%;
+    --chart-3: 200 55% 55%;
+    --chart-4: 220 45% 55%;
+    --chart-5: 220 15% 55%;
+    
+    --sidebar: 220 18% 14%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 5 60% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 5 30% 22%;
+    --sidebar-accent-foreground: 5 60% 70%;
+    --sidebar-border: 220 15% 25%;
+    --sidebar-ring: 5 60% 60%;
+    
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.3);
+    --shadow-xs: 0 2px 4px 0px hsl(0 0% 0% / 0.3);
+    --shadow-sm: 0 2px 6px 0px hsl(0 0% 0% / 0.35);
+    --shadow: 0 4px 8px 0px hsl(0 0% 0% / 0.35);
+    --shadow-md: 0 6px 12px 0px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 10px 20px 0px hsl(0 0% 0% / 0.4);
+    --shadow-xl: 0 15px 30px 0px hsl(0 0% 0% / 0.45);
+    --shadow-2xl: 0 20px 40px 0px hsl(0 0% 0% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    /* bg-background is solid, detailed background handled in App.tsx */
+    @apply bg-background text-foreground min-h-screen relative overflow-hidden transition-colors duration-300;
+  }
+}
+
+@layer components {
+  /* Soft Neumorphic Utilities */
+  .glass {
+    @apply bg-card border-none shadow-md;
+  }
+  
+  .glass-card {
+    @apply bg-card border-none rounded-2xl shadow-md hover:shadow-lg transition-all duration-300;
+  }
+
+  .glass-panel {
+    @apply bg-card border-none rounded-2xl;
+  }
+
+  .glass-header {
+    @apply bg-background border-b border-border/50 sticky top-0 z-50;
+  }
+
+  /* Custom scrollbar utilities */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  /* Soft card style */
+  .card {
+     @apply bg-card border-none rounded-2xl shadow-md;
+  }
+  
+  .popover-content {
+    @apply bg-popover border-none rounded-xl shadow-lg;
+  }
+  
+  .dialog-content {
+    @apply bg-background border-none rounded-2xl shadow-xl;
+  }
+  
+  /* Soft input style */
+  .soft-input {
+    @apply bg-secondary border-none rounded-xl shadow-inner;
+  }
+}

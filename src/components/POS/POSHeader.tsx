@@ -1,4 +1,6 @@
 import { usePOSStore } from '@/stores/posStore';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -15,11 +17,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { SaleDatePicker } from '@/components/POS/SaleDatePicker';
 
 interface POSHeaderProps {
-  onNavigate: (page: 'pos' | 'dashboard' | 'inventory') => void;
-  currentPage: string;
+  // onNavigate removed
+  // currentPage removed (using usePathname)
 }
 
-export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
+export function POSHeader() {
+  const pathname = usePathname();
+  const currentPage = pathname?.split('/').pop() || 'pos'; // naive check or use strict matching
   const { currentUser, logout } = usePOSStore();
   const { theme, toggleTheme } = useTheme();
 
@@ -39,27 +43,31 @@ export function POSHeader({ onNavigate, currentPage }: POSHeaderProps) {
 
         <nav className="hidden lg:flex items-center space-x-1">
           <Button
-            variant={currentPage === 'pos' ? 'default' : 'ghost'}
-            onClick={() => onNavigate('pos')}
+            variant={pathname === '/pos' ? 'default' : 'ghost'}
+            asChild
             className="text-sm"
           >
-            POS
+            <Link href="/pos">POS</Link>
           </Button>
           <Button
-            variant={currentPage === 'dashboard' ? 'default' : 'ghost'}
-            onClick={() => onNavigate('dashboard')}
+            variant={pathname === '/dashboard' ? 'default' : 'ghost'}
+            asChild
             className="text-sm"
           >
-            <BarChart3 className="h-4 w-4 mr-1" />
-            Dashboard
+            <Link href="/dashboard">
+              <BarChart3 className="h-4 w-4 mr-1" />
+              Dashboard
+            </Link>
           </Button>
           <Button
-            variant={currentPage === 'inventory' ? 'default' : 'ghost'}
-            onClick={() => onNavigate('inventory')}
+            variant={pathname === '/inventory' ? 'default' : 'ghost'}
+            asChild
             className="text-sm"
           >
-            <Settings className="h-4 w-4 mr-1" />
-            Inventory
+            <Link href="/inventory">
+              <Settings className="h-4 w-4 mr-1" />
+              Inventory
+            </Link>
           </Button>
         </nav>
       </div>
