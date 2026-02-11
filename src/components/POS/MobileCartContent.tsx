@@ -288,20 +288,9 @@ export function MobileCartContent() {
             </ScrollArea>
 
             <div className="space-y-4 p-4 border-t border-border bg-card">
-              <div className="space-y-3">
-                <div className="flex justify-between text-base">
-                  <span>Subtotal</span>
-                  <span>{formatNumber(cartSubtotal, '$')}</span>
-                </div>
-                <div className="flex justify-between text-base">
-                  <span>Impuesto (9%)</span>
-                  <span>{formatNumber(cartTax, '$')}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between font-bold text-xl">
-                  <span>Total</span>
-                  <span className="text-pos-total">{formatNumber(cartTotal, '$')}</span>
-                </div>
+              <div className="flex justify-between font-bold text-xl">
+                <span>Total</span>
+                <span className="text-pos-total">{formatNumber(cartTotal, '$')}</span>
               </div>
 
               <div className="grid grid-cols-1 gap-3">
