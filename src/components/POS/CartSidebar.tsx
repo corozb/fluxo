@@ -284,20 +284,9 @@ export function CartSidebar() {
             </ScrollArea>
 
             <div className="space-y-4 pt-4 border-t border-border">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal</span>
-                  <span>{formatNumber(cartSubtotal, '$')}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Impuesto (9%)</span>
-                  <span>{formatNumber(cartTax, '$')}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between font-bold text-lg">
-                  <span>Total</span>
-                  <span className="text-pos-total">{formatNumber(cartTotal, '$')}</span>
-                </div>
+              <div className="flex justify-between font-bold text-lg">
+                <span>Total</span>
+                <span className="text-pos-total">{formatNumber(cartTotal, '$')}</span>
               </div>
 
               <div className="space-y-2">
