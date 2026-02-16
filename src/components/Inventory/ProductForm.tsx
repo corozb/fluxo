@@ -1,17 +1,11 @@
-import { useState, useEffect } from 'react';
-import { usePOSStore, Product } from '@/stores/posStore';
-import { useCategoriesStore } from '@/stores/categoriesStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { useState, useEffect } from "react";
+import { usePOSStore, Product } from "@/stores/posStore";
+import { useCategoriesStore } from "@/stores/categoriesStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -19,9 +13,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import { ScanBarcode } from "lucide-react";
+import { BarcodeScanner } from "../POS/BarcodeScanner";
 
 interface ProductFormProps {
   isOpen: boolean;
@@ -40,16 +36,17 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
   const { addProduct, updateProduct } = usePOSStore();
   const { categories } = useCategoriesStore();
   const { toast } = useToast();
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    cost: '',
-    category: '',
-    stock: '',
-    lowStockThreshold: '10',
-    description: '',
-    barcode: ''
+    name: "",
+    price: "",
+    cost: "",
+    category: "",
+    stock: "",
+    lowStockThreshold: "10",
+    description: "",
+    barcode: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -58,25 +55,25 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
   useEffect(() => {
     if (product) {
       setFormData({
-        name: product.name || '',
-        price: product.price?.toString() || '',
-        cost: product.cost?.toString() || '',
-        category: product.category || '',
-        stock: product.stock?.toString() || '',
-        lowStockThreshold: product.lowStockThreshold?.toString() || '10',
-        description: product.description || '',
-        barcode: product.barcode || ''
+        name: product.name || "",
+        price: product.price?.toString() || "",
+        cost: product.cost?.toString() || "",
+        category: product.category || "",
+        stock: product.stock?.toString() || "",
+        lowStockThreshold: product.lowStockThreshold?.toString() || "10",
+        description: product.description || "",
+        barcode: product.barcode || "",
       });
     } else {
       setFormData({
-        name: '',
-        price: '',
-        cost: '',
-        category: '',
-        stock: '',
-        lowStockThreshold: '10',
-        description: '',
-        barcode: ''
+        name: "",
+        price: "",
+        cost: "",
+        category: "",
+        stock: "",
+        lowStockThreshold: "10",
+        description: "",
+        barcode: "",
       });
     }
     setErrors({});
@@ -85,7 +82,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
+
     if (!formData.name.trim()) newErrors.name = true;
     if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = true;
     if (!formData.category) newErrors.category = true;
@@ -93,7 +90,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
 
     setErrors(newErrors);
     setTouched({ name: true, price: true, category: true, stock: true });
-    
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -104,7 +101,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
       toast({
         title: "Error",
         description: "Por favor complete todos los campos requeridos",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -117,20 +114,20 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
       stock: parseInt(formData.stock),
       lowStockThreshold: parseInt(formData.lowStockThreshold),
       description: formData.description,
-      barcode: formData.barcode
+      barcode: formData.barcode,
     };
 
     if (product) {
       updateProduct(product.id, productData);
       toast({
         title: "Éxito",
-        description: "Producto actualizado correctamente"
+        description: "Producto actualizado correctamente",
       });
     } else {
       addProduct(productData);
       toast({
         title: "Éxito",
-        description: "Producto agregado correctamente"
+        description: "Producto agregado correctamente",
       });
     }
 
@@ -138,24 +135,24 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
   };
 
   const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (touched[field]) {
       // Clear error when user starts typing
-      setErrors(prev => ({ ...prev, [field]: false }));
+      setErrors((prev) => ({ ...prev, [field]: false }));
     }
   };
 
   const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
     // Validate on blur
-    if (field === 'name' && !formData.name.trim()) {
-      setErrors(prev => ({ ...prev, name: true }));
-    } else if (field === 'price' && (!formData.price || parseFloat(formData.price) <= 0)) {
-      setErrors(prev => ({ ...prev, price: true }));
-    } else if (field === 'category' && !formData.category) {
-      setErrors(prev => ({ ...prev, category: true }));
-    } else if (field === 'stock' && (!formData.stock || parseInt(formData.stock) < 0)) {
-      setErrors(prev => ({ ...prev, stock: true }));
+    if (field === "name" && !formData.name.trim()) {
+      setErrors((prev) => ({ ...prev, name: true }));
+    } else if (field === "price" && (!formData.price || parseFloat(formData.price) <= 0)) {
+      setErrors((prev) => ({ ...prev, price: true }));
+    } else if (field === "category" && !formData.category) {
+      setErrors((prev) => ({ ...prev, category: true }));
+    } else if (field === "stock" && (!formData.stock || parseInt(formData.stock) < 0)) {
+      setErrors((prev) => ({ ...prev, stock: true }));
     }
   };
 
@@ -168,31 +165,32 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
       <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>
-              {product ? 'Editar Producto' : 'Agregar Nuevo Producto'}
-            </DialogTitle>
+            <DialogTitle>{product ? "Editar Producto" : "Agregar Nuevo Producto"}</DialogTitle>
             <DialogDescription>
-              {product ? 'Actualizar información del producto' : 'Crear un nuevo producto para tu inventario'}
+              {product ? "Actualizar información del producto" : "Crear un nuevo producto para tu inventario"}
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className={cn("text-right", getFieldError('name') && "text-destructive")}>
+              <Label htmlFor="name" className={cn("text-right", getFieldError("name") && "text-destructive")}>
                 Nombre *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                onBlur={() => handleBlur('name')}
-                className={cn("col-span-3", getFieldError('name') && "border-destructive ring-destructive focus-visible:ring-destructive")}
+                onChange={(e) => handleChange("name", e.target.value)}
+                onBlur={() => handleBlur("name")}
+                className={cn(
+                  "col-span-3",
+                  getFieldError("name") && "border-destructive ring-destructive focus-visible:ring-destructive"
+                )}
                 required
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="price" className={cn("text-right", getFieldError('price') && "text-destructive")}>
+              <Label htmlFor="price" className={cn("text-right", getFieldError("price") && "text-destructive")}>
                 Precio *
               </Label>
               <Input
@@ -201,9 +199,12 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
                 step="0.01"
                 min="0"
                 value={formData.price}
-                onChange={(e) => handleChange('price', e.target.value)}
-                onBlur={() => handleBlur('price')}
-                className={cn("col-span-3", getFieldError('price') && "border-destructive ring-destructive focus-visible:ring-destructive")}
+                onChange={(e) => handleChange("price", e.target.value)}
+                onBlur={() => handleBlur("price")}
+                className={cn(
+                  "col-span-3",
+                  getFieldError("price") && "border-destructive ring-destructive focus-visible:ring-destructive"
+                )}
                 placeholder="0.00"
                 required
               />
@@ -219,25 +220,30 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
                 step="0.01"
                 min="0"
                 value={formData.cost}
-                onChange={(e) => handleChange('cost', e.target.value)}
+                onChange={(e) => handleChange("cost", e.target.value)}
                 className="col-span-3"
                 placeholder="0.00 (para calcular ganancia)"
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="category" className={cn("text-right", getFieldError('category') && "text-destructive")}>
+              <Label htmlFor="category" className={cn("text-right", getFieldError("category") && "text-destructive")}>
                 Categoría *
               </Label>
               <Select
                 value={formData.category}
                 onValueChange={(value) => {
-                  handleChange('category', value);
-                  setTouched(prev => ({ ...prev, category: true }));
-                  setErrors(prev => ({ ...prev, category: false }));
+                  handleChange("category", value);
+                  setTouched((prev) => ({ ...prev, category: true }));
+                  setErrors((prev) => ({ ...prev, category: false }));
                 }}
               >
-                <SelectTrigger className={cn("col-span-3", getFieldError('category') && "border-destructive ring-destructive focus-visible:ring-destructive")}>
+                <SelectTrigger
+                  className={cn(
+                    "col-span-3",
+                    getFieldError("category") && "border-destructive ring-destructive focus-visible:ring-destructive"
+                  )}
+                >
                   <SelectValue placeholder="Seleccionar categoría" />
                 </SelectTrigger>
                 <SelectContent>
@@ -251,7 +257,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="stock" className={cn("text-right", getFieldError('stock') && "text-destructive")}>
+              <Label htmlFor="stock" className={cn("text-right", getFieldError("stock") && "text-destructive")}>
                 Stock *
               </Label>
               <Input
@@ -259,9 +265,12 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
                 type="number"
                 min="0"
                 value={formData.stock}
-                onChange={(e) => handleChange('stock', e.target.value)}
-                onBlur={() => handleBlur('stock')}
-                className={cn("col-span-3", getFieldError('stock') && "border-destructive ring-destructive focus-visible:ring-destructive")}
+                onChange={(e) => handleChange("stock", e.target.value)}
+                onBlur={() => handleBlur("stock")}
+                className={cn(
+                  "col-span-3",
+                  getFieldError("stock") && "border-destructive ring-destructive focus-visible:ring-destructive"
+                )}
                 required
               />
             </div>
@@ -275,7 +284,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
                 type="number"
                 min="0"
                 value={formData.lowStockThreshold}
-                onChange={(e) => handleChange('lowStockThreshold', e.target.value)}
+                onChange={(e) => handleChange("lowStockThreshold", e.target.value)}
                 className="col-span-3"
               />
             </div>
@@ -284,12 +293,23 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
               <Label htmlFor="barcode" className="text-right">
                 Código de Barras
               </Label>
-              <Input
-                id="barcode"
-                value={formData.barcode}
-                onChange={(e) => handleChange('barcode', e.target.value)}
-                className="col-span-3"
-              />
+              <div className="col-span-3 flex gap-2">
+                <Input
+                  id="barcode"
+                  value={formData.barcode}
+                  onChange={(e) => handleChange("barcode", e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setIsScannerOpen(true)}
+                  title="Escanear código de barras"
+                >
+                  <ScanBarcode className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
@@ -299,7 +319,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleChange('description', e.target.value)}
+                onChange={(e) => handleChange("description", e.target.value)}
                 className="col-span-3"
                 rows={3}
               />
@@ -311,10 +331,16 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
               Cancelar
             </Button>
             <Button type="submit" variant="pos">
-              {product ? 'Actualizar' : 'Agregar'} Producto
+              {product ? "Actualizar" : "Agregar"} Producto
             </Button>
           </DialogFooter>
         </form>
+
+        <BarcodeScanner
+          isOpen={isScannerOpen}
+          onClose={() => setIsScannerOpen(false)}
+          onScanResult={(barcode) => handleChange("barcode", barcode)}
+        />
       </DialogContent>
     </Dialog>
   );

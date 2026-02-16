@@ -1,50 +1,45 @@
-import { useState, useMemo } from 'react';
-import { formatNumber } from '@/lib/utils';
-import { usePOSStore } from '@/stores/posStore';
-import { useCategoriesStore } from '@/stores/categoriesStore';
-import { POSHeader } from '@/components/POS/POSHeader';
-import { ProductForm } from '@/components/Inventory/ProductForm';
-import { CategoryManager } from '@/components/Inventory/CategoryManager';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { useState, useMemo } from "react";
+import { formatNumber } from "@/lib/utils";
+import { usePOSStore } from "@/stores/posStore";
+import { useCategoriesStore } from "@/stores/categoriesStore";
+import { POSHeader } from "@/components/POS/POSHeader";
+import { ProductForm } from "@/components/Inventory/ProductForm";
+import { CategoryManager } from "@/components/Inventory/CategoryManager";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { BarcodeScanner } from "@/components/POS/BarcodeScanner";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, MoreHorizontal, Edit, Trash2, AlertTriangle, Tag } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/dropdown-menu";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus, Search, MoreHorizontal, Edit, Trash2, AlertTriangle, Tag, X, ScanBarcode } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Interface removed or empty
 export function Inventory() {
   const { products, deleteProduct, currentUser } = usePOSStore();
   const { categories } = useCategoriesStore();
   const { toast } = useToast();
-  
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
-  const isAdmin = currentUser?.role === 'admin';
+  const isAdmin = currentUser?.role === "admin";
 
   // Calculate product counts per category
   const categoryProductCounts = useMemo(() => {
     const counts: Record<string, number> = { All: products.length };
-    products.forEach(product => {
+    products.forEach((product) => {
       counts[product.category] = (counts[product.category] || 0) + 1;
     });
     return counts;
@@ -52,40 +47,39 @@ export function Inventory() {
 
   // Get categories with their counts (only categories with products)
   const categoriesWithCounts = useMemo(() => {
-    const categoriesWithProducts = categories.filter(
-      category => (categoryProductCounts[category] || 0) > 0
-    );
+    const categoriesWithProducts = categories.filter((category) => (categoryProductCounts[category] || 0) > 0);
     return [
-      { name: 'All', count: products.length },
-      ...categoriesWithProducts.map(category => ({
+      { name: "All", count: products.length },
+      ...categoriesWithProducts.map((category) => ({
         name: category,
-        count: categoryProductCounts[category] || 0
-      }))
+        count: categoryProductCounts[category] || 0,
+      })),
     ];
   }, [categories, categoryProductCounts, products.length]);
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
-    
+
     // Filter by category
-    if (selectedCategory !== 'All') {
-      filtered = filtered.filter(product => product.category === selectedCategory);
+    if (selectedCategory !== "All") {
+      filtered = filtered.filter((product) => product.category === selectedCategory);
     }
-    
+
     // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query) ||
-        (product.barcode && product.barcode.toLowerCase().includes(query))
+      filtered = filtered.filter(
+        (product) =>
+          product.name.toLowerCase().includes(query) ||
+          product.category.toLowerCase().includes(query) ||
+          (product.barcode && product.barcode.toLowerCase().includes(query))
       );
     }
-    
+
     return filtered;
   }, [products, selectedCategory, searchQuery]);
 
-  const lowStockProducts = products.filter(p => p.stock <= p.lowStockThreshold);
+  const lowStockProducts = products.filter((p) => p.stock <= p.lowStockThreshold);
 
   const handleEditProduct = (product: any) => {
     setEditingProduct(product);
@@ -96,7 +90,7 @@ export function Inventory() {
     deleteProduct(product.id);
     toast({
       title: "Éxito",
-      description: `${product.name} ha sido eliminado`
+      description: `${product.name} ha sido eliminado`,
     });
   };
 
@@ -108,14 +102,12 @@ export function Inventory() {
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <POSHeader />
-      
+
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h2 className="text-3xl font-bold tracking-tight">Gestión de Inventario</h2>
-            <p className="text-muted-foreground">
-              Administra tus productos y niveles de stock
-            </p>
+            <p className="text-muted-foreground">Administra tus productos y niveles de stock</p>
           </div>
           <div className="flex gap-2">
             {isAdmin && (
@@ -138,9 +130,25 @@ export function Inventory() {
               placeholder="Buscar productos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 "
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-mute d-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setIsScannerOpen(true)}
+            title="Escanear código de barras"
+          >
+            <ScanBarcode className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Category filter tabs */}
@@ -153,10 +161,8 @@ export function Inventory() {
                 className="cursor-pointer whitespace-nowrap px-3 py-1.5 text-sm flex-shrink-0"
                 onClick={() => setSelectedCategory(name)}
               >
-                {name === 'All' ? 'Todos' : name}
-                <span className="ml-1.5 rounded-full bg-background/20 px-1.5 py-0.5 text-xs">
-                  {count}
-                </span>
+                {name === "All" ? "Todos" : name}
+                <span className="ml-1.5 rounded-full bg-background/20 px-1.5 py-0.5 text-xs">{count}</span>
               </Badge>
             ))}
           </div>
@@ -174,11 +180,9 @@ export function Inventory() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Los siguientes productos tienen stock bajo:
-                </p>
+                <p className="text-sm text-muted-foreground mb-3">Los siguientes productos tienen stock bajo:</p>
                 <div className="flex flex-wrap gap-2">
-                  {lowStockProducts.map(product => (
+                  {lowStockProducts.map((product) => (
                     <Badge key={product.id} variant="outline" className="border-warning text-warning">
                       {product.name} ({product.stock} restantes)
                     </Badge>
@@ -205,36 +209,28 @@ export function Inventory() {
                 </TableHeader>
                 <TableBody>
                   {filteredProducts.map((product) => {
-                    const margin = product.cost 
-                      ? ((product.price - product.cost) / product.price * 100).toFixed(1)
+                    const margin = product.cost
+                      ? (((product.price - product.cost) / product.price) * 100).toFixed(1)
                       : null;
-                    
+
                     return (
                       <TableRow key={product.id}>
                         <TableCell>
                           <div>
                             <p className="font-medium">{product.name}</p>
-                            {product.barcode && (
-                              <p className="text-xs text-muted-foreground">
-                                {product.barcode}
-                              </p>
-                            )}
+                            {product.barcode && <p className="text-xs text-muted-foreground">{product.barcode}</p>}
                           </div>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">{product.category}</Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
-                          {product.cost ? formatNumber(product.cost, '$') : '-'}
+                          {product.cost ? formatNumber(product.cost, "$") : "-"}
                         </TableCell>
-                        <TableCell className="font-medium">
-                          {formatNumber(product.price, '$')}
-                        </TableCell>
+                        <TableCell className="font-medium">{formatNumber(product.price, "$")}</TableCell>
                         <TableCell>
                           {margin ? (
-                            <Badge variant={parseFloat(margin) >= 30 ? "secondary" : "outline"}>
-                              {margin}%
-                            </Badge>
+                            <Badge variant={parseFloat(margin) >= 30 ? "secondary" : "outline"}>{margin}%</Badge>
                           ) : (
                             <span className="text-muted-foreground">-</span>
                           )}
@@ -248,9 +244,7 @@ export function Inventory() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            variant={product.stock > product.lowStockThreshold ? "secondary" : "destructive"}
-                          >
+                          <Badge variant={product.stock > product.lowStockThreshold ? "secondary" : "destructive"}>
                             {product.stock > product.lowStockThreshold ? "En Stock" : "Stock Bajo"}
                           </Badge>
                         </TableCell>
@@ -286,18 +280,18 @@ export function Inventory() {
         </div>
       </div>
 
-      <ProductForm
-        isOpen={isFormOpen}
-        onClose={handleCloseForm}
-        product={editingProduct}
-      />
+      <ProductForm isOpen={isFormOpen} onClose={handleCloseForm} product={editingProduct} />
 
-      {isAdmin && (
-        <CategoryManager
-          isOpen={isCategoryManagerOpen}
-          onClose={() => setIsCategoryManagerOpen(false)}
-        />
-      )}
+      {isAdmin && <CategoryManager isOpen={isCategoryManagerOpen} onClose={() => setIsCategoryManagerOpen(false)} />}
+
+      <BarcodeScanner
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScanResult={(barcode) => {
+          setSearchQuery(barcode);
+          setIsScannerOpen(false);
+        }}
+      />
     </div>
   );
 }
