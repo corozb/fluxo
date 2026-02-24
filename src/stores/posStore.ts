@@ -148,7 +148,7 @@ export const usePOSStore = create<POSState>()(
             });
             
             const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-            const tax = subtotal * 0.09;
+            const tax = 0;
             const total = subtotal + tax;
             
             set({
@@ -169,7 +169,7 @@ export const usePOSStore = create<POSState>()(
             
             const newCart = [...cart, newItem];
             const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-            const tax = subtotal * 0.09; // 9% tax
+            const tax = 0; // 0% tax
             const total = subtotal + tax;
             
             set({
@@ -185,7 +185,7 @@ export const usePOSStore = create<POSState>()(
           const { cart } = get();
           const newCart = cart.filter(item => item.id !== productId);
           const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-          const tax = subtotal * 0.09;
+          const tax = 0;
           const total = subtotal + tax;
           
           set({
@@ -227,7 +227,7 @@ export const usePOSStore = create<POSState>()(
           });
           
           const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-          const tax = subtotal * 0.09;
+          const tax = 0;
           const total = subtotal + tax;
           
           set({
@@ -254,7 +254,7 @@ export const usePOSStore = create<POSState>()(
           });
           
           const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-          const tax = subtotal * 0.09;
+          const tax = 0;
           const total = subtotal + tax;
           
           set({
@@ -283,7 +283,7 @@ export const usePOSStore = create<POSState>()(
           });
           
           const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-          const tax = subtotal * 0.09;
+          const tax = 0;
           const total = subtotal + tax;
           
           set({
