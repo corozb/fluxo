@@ -44,7 +44,7 @@ export function MobileCartButton() {
         </SheetTrigger>
         
         <SheetContent side="bottom" className="h-[80vh] rounded-t-xl">
-          <MobileCartContent />
+          <MobileCartContent onClose={() => setIsOpen(false)} />
         </SheetContent>
       </Sheet>
       

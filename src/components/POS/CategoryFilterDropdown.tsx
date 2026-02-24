@@ -1,4 +1,5 @@
 import { usePOSStore } from '@/stores/posStore';
+import { useInventory } from '@/hooks/useInventory';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,13 +10,16 @@ import {
 import { ChevronDown, Check } from 'lucide-react';
 
 export function CategoryFilterDropdown() {
-  const { products, selectedCategory, setSelectedCategory } = usePOSStore();
+  const { selectedCategory, setSelectedCategory } = usePOSStore();
+  const { products, isLoadingProducts } = useInventory();
 
   // Get unique categories with product counts
-  const categories = Array.from(new Set(products.map(p => p.category)));
-  const categoriesWithCounts = categories.map(category => ({
+  // Ensure we are working with strings
+  const categories: string[] = Array.from(new Set(products.map((p: any) => p.category as string)));
+  
+  const categoriesWithCounts = categories.map((category) => ({
     name: category,
-    count: products.filter(p => p.category === category).length
+    count: products.filter((p: any) => p.category === category).length
   }));
 
   const totalProducts = products.length;

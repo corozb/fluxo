@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { usePOSStore } from '@/stores/posStore';
+import { usePOSStore, Sale, Product } from '@/stores/posStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -9,10 +9,11 @@ import { formatNumber } from '@/lib/utils';
 
 interface TopProductsProps {
   dateRange: DateRange;
+  sales: Sale[];
+  products: Product[];
 }
 
-export function TopProducts({ dateRange }: TopProductsProps) {
-  const { sales, products } = usePOSStore();
+export function TopProducts({ dateRange, sales, products }: TopProductsProps) {
 
   const topProducts = useMemo(() => {
     // Filter sales by date range

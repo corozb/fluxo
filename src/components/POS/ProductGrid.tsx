@@ -1,12 +1,41 @@
 import { usePOSStore } from '@/stores/posStore';
+import { useInventory } from '@/hooks/useInventory';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, AlertTriangle, Barcode } from 'lucide-react';
+import { useMemo } from 'react';
 
 export function ProductGrid() {
-  const { filteredProducts, addToCart } = usePOSStore();
+  const { addToCart, searchQuery, selectedCategory } = usePOSStore();
+  const { products, isLoadingProducts } = useInventory();
+
+  const filteredProducts = useMemo(() => {
+    let filtered = products;
+
+    // Filter by category
+    if (selectedCategory !== "All") {
+      filtered = filtered.filter((product) => product.category === selectedCategory);
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (product) =>
+          product.name.toLowerCase().includes(query) ||
+          product.category.toLowerCase().includes(query) ||
+          (product.barcode && product.barcode.toLowerCase().includes(query))
+      );
+    }
+
+    return filtered;
+  }, [products, selectedCategory, searchQuery]);
+
+  if (isLoadingProducts) {
+    return <div className="p-8 text-center">Cargando productos...</div>;
+  }
 
   const handleAddToCart = (product: any) => {
     addToCart(product);

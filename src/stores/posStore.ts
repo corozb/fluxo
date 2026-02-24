@@ -41,12 +41,9 @@ export interface User {
 }
 
 interface POSState {
-  // Products
-  products: Product[];
-  filteredProducts: Product[];
-  
   // Cart
   cart: CartItem[];
+
   cartTotal: number;
   cartTax: number;
   cartDiscount: number;
@@ -73,16 +70,11 @@ interface POSState {
   updateCartUnitPrice: (productId: string, unitIndex: number, newPrice: number) => void;
   clearCart: () => void;
   
-  // Product actions
-  addProduct: (product: Omit<Product, 'id'>) => void;
-  updateProduct: (id: string, updates: Partial<Product>) => void;
-  deleteProduct: (id: string) => void;
-  updateStock: (id: string, quantity: number) => void;
-  
-  // Search and filter
+  // Search and filter (moved to local component state or keeping for UI global filter?)
+  // Keeping for UI coordination between header and views
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
-  filterProducts: () => void;
+  // filterProducts removed as it should be done in the component/hook level
   
   // Sales
   setSaleDate: (date: Date) => void;
@@ -96,75 +88,8 @@ interface POSState {
   toggleCheckout: () => void;
 }
 
-// Mock data
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Espresso',
-    price: 2.99,
-    cost: 0.80,
-    category: 'Coffee',
-    stock: 50,
-    lowStockThreshold: 10,
-    description: 'Rich, bold espresso shot',
-    barcode: '7501234567890'
-  },
-  {
-    id: '2',
-    name: 'Cappuccino',
-    price: 4.99,
-    cost: 1.50,
-    category: 'Coffee',
-    stock: 45,
-    lowStockThreshold: 10,
-    description: 'Creamy cappuccino with steamed milk',
-    barcode: '7501234567891'
-  },
-  {
-    id: '3',
-    name: 'Croissant',
-    price: 3.49,
-    cost: 1.20,
-    category: 'Pastry',
-    stock: 25,
-    lowStockThreshold: 5,
-    description: 'Buttery, flaky croissant',
-    barcode: '7501234567892'
-  },
-  {
-    id: '4',
-    name: 'Latte',
-    price: 5.49,
-    cost: 1.80,
-    category: 'Coffee',
-    stock: 40,
-    lowStockThreshold: 10,
-    description: 'Smooth latte with steamed milk',
-    barcode: '7501234567893'
-  },
-  {
-    id: '5',
-    name: 'Blueberry Muffin',
-    price: 2.99,
-    cost: 0.90,
-    category: 'Pastry',
-    stock: 15,
-    lowStockThreshold: 5,
-    description: 'Fresh blueberry muffin',
-    barcode: '7501234567894'
-  },
-  {
-    id: '6',
-    name: 'Green Tea',
-    price: 3.99,
-    cost: 0.60,
-    category: 'Tea',
-    stock: 30,
-    lowStockThreshold: 8,
-    description: 'Premium green tea',
-    barcode: '7501234567895'
-  }
-];
+// Mock data removed in favor of Database
+
 
 // Categories store
 interface CategoriesState {
@@ -175,35 +100,19 @@ interface CategoriesState {
 
 const defaultCategories = ['Coffee', 'Tea', 'Pastry', 'Sandwich', 'Salad', 'Beverage', 'Snack'];
 
-const mockSales: Sale[] = [
-  {
-    id: 'sale-1',
-    items: [
-      { ...mockProducts[0], quantity: 2, subtotal: 5.98, originalPrice: mockProducts[0].price, unitPrices: [mockProducts[0].price, mockProducts[0].price] },
-      { ...mockProducts[2], quantity: 1, subtotal: 3.49, originalPrice: mockProducts[2].price, unitPrices: [mockProducts[2].price] }
-    ],
-    total: 9.47,
-    tax: 0.85,
-    discount: 0,
-    paymentMethod: 'card',
-    timestamp: new Date(Date.now() - 86400000), // Yesterday
-    cashierId: 'user-1'
-  }
-];
+
 
 export const usePOSStore = create<POSState>()(
   devtools(
     persist(
       (set, get) => ({
         // Initial state
-        products: mockProducts,
-        filteredProducts: mockProducts,
         cart: [],
         cartTotal: 0,
         cartTax: 0,
         cartDiscount: 0,
         cartSubtotal: 0,
-        sales: mockSales,
+        sales: [],
         todaySales: [],
         saleDate: new Date(),
         currentUser: null,
@@ -239,7 +148,7 @@ export const usePOSStore = create<POSState>()(
             });
             
             const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-            const tax = subtotal * 0.09;
+            const tax = 0;
             const total = subtotal + tax;
             
             set({
@@ -260,7 +169,7 @@ export const usePOSStore = create<POSState>()(
             
             const newCart = [...cart, newItem];
             const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-            const tax = subtotal * 0.09; // 9% tax
+            const tax = 0; // 0% tax
             const total = subtotal + tax;
             
             set({
@@ -276,7 +185,7 @@ export const usePOSStore = create<POSState>()(
           const { cart } = get();
           const newCart = cart.filter(item => item.id !== productId);
           const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-          const tax = subtotal * 0.09;
+          const tax = 0;
           const total = subtotal + tax;
           
           set({
@@ -318,7 +227,7 @@ export const usePOSStore = create<POSState>()(
           });
           
           const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-          const tax = subtotal * 0.09;
+          const tax = 0;
           const total = subtotal + tax;
           
           set({
@@ -345,7 +254,7 @@ export const usePOSStore = create<POSState>()(
           });
           
           const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-          const tax = subtotal * 0.09;
+          const tax = 0;
           const total = subtotal + tax;
           
           set({
@@ -374,7 +283,7 @@ export const usePOSStore = create<POSState>()(
           });
           
           const subtotal = newCart.reduce((sum, item) => sum + item.subtotal, 0);
-          const tax = subtotal * 0.09;
+          const tax = 0;
           const total = subtotal + tax;
           
           set({
@@ -395,67 +304,16 @@ export const usePOSStore = create<POSState>()(
           });
         },
 
-        // Product actions
-        addProduct: (product) => {
-          const newProduct: Product = {
-            ...product,
-            id: Date.now().toString()
-          };
-          set(state => ({
-            products: [...state.products, newProduct]
-          }));
-          get().filterProducts();
-        },
+        // Product actions removed - handled by React Query mutations in components
 
-        updateProduct: (id, updates) => {
-          set(state => ({
-            products: state.products.map(product =>
-              product.id === id ? { ...product, ...updates } : product
-            )
-          }));
-          get().filterProducts();
-        },
-
-        deleteProduct: (id) => {
-          set(state => ({
-            products: state.products.filter(product => product.id !== id)
-          }));
-          get().filterProducts();
-        },
-
-        updateStock: (id, quantity) => {
-          get().updateProduct(id, { stock: quantity });
-        },
 
         // Search and filter
         setSearchQuery: (query) => {
           set({ searchQuery: query });
-          get().filterProducts();
         },
 
         setSelectedCategory: (category) => {
           set({ selectedCategory: category });
-          get().filterProducts();
-        },
-
-        filterProducts: () => {
-          const { products, searchQuery, selectedCategory } = get();
-          let filtered = products;
-
-          if (selectedCategory !== 'All') {
-            filtered = filtered.filter(product => product.category === selectedCategory);
-          }
-
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(product =>
-              product.name.toLowerCase().includes(query) ||
-              product.category.toLowerCase().includes(query) ||
-              (product.barcode && product.barcode.toLowerCase().includes(query))
-            );
-          }
-
-          set({ filteredProducts: filtered });
         },
 
         // Sales
@@ -481,10 +339,10 @@ export const usePOSStore = create<POSState>()(
             customerId
           };
 
-          // Update stock
-          cart.forEach(item => {
-            get().updateStock(item.id, item.stock - item.quantity);
-          });
+          // Stock update is handled by the server action when recording the sale
+          // cart.forEach(item => {
+          //   get().updateStock(item.id, item.stock - item.quantity);
+          // });
 
           set(state => ({
             sales: [...state.sales, sale],
@@ -513,7 +371,6 @@ export const usePOSStore = create<POSState>()(
       {
         name: 'pos-storage',
         partialize: (state) => ({
-          products: state.products,
           sales: state.sales,
           currentUser: state.currentUser
         })

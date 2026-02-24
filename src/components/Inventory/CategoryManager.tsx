@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useCategoriesStore } from '@/stores/categoriesStore';
+// import { useCategoriesStore } from '@/stores/categoriesStore';
+import { useInventory } from '@/hooks/useInventory';
 import { usePOSStore } from '@/stores/posStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,14 +32,17 @@ interface CategoryManagerProps {
 }
 
 export function CategoryManager({ isOpen, onClose }: CategoryManagerProps) {
-  const { categories, addCategory, deleteCategory } = useCategoriesStore();
-  const { products } = usePOSStore();
+  // const { categories, addCategory, deleteCategory } = useCategoriesStore();
+  const { categories, createCategory, deleteCategory, products } = useInventory();
+  // const { products } = usePOSStore(); // Products now come from useInventory or passed in? Store has cart, hook has data.
+  // Actually, useInventory returns products too.
+  
   const { toast } = useToast();
   
   const [newCategory, setNewCategory] = useState('');
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     const trimmed = newCategory.trim();
     if (!trimmed) {
       toast({
@@ -49,7 +53,9 @@ export function CategoryManager({ isOpen, onClose }: CategoryManagerProps) {
       return;
     }
 
-    if (categories.includes(trimmed)) {
+    // Check if category exists (case insensitive?)
+    // Note: Database check is better but we can check local list from hook
+    if (categories.some((c: any) => c.name.toLowerCase() === trimmed.toLowerCase())) {
       toast({
         title: "Error",
         description: "Esta categoría ya existe",
@@ -58,17 +64,21 @@ export function CategoryManager({ isOpen, onClose }: CategoryManagerProps) {
       return;
     }
 
-    addCategory(trimmed);
+    await createCategory(trimmed);
+    // Success toast handled in hook or here? Hook has it.
     setNewCategory('');
-    toast({
-      title: "Éxito",
-      description: `Categoría "${trimmed}" agregada correctamente`
-    });
   };
 
-  const handleDeleteCategory = (category: string) => {
+  const handleDeleteCategory = async (categoryId: string) => {
     // Check if any products use this category
-    const productsUsingCategory = products.filter(p => p.category === category);
+    // Since we only have ID, we need to find the name to check against products (which currently use flattened name)
+    // OR we should be checking against categoryId if products had it.
+    // products from useInventory has flattened category name.
+    
+    const categoryName = categories.find((c: any) => c.id === categoryId)?.name;
+    if (!categoryName) return;
+
+    const productsUsingCategory = products.filter((p: any) => p.category === categoryName);
     if (productsUsingCategory.length > 0) {
       toast({
         title: "No se puede eliminar",
@@ -79,16 +89,12 @@ export function CategoryManager({ isOpen, onClose }: CategoryManagerProps) {
       return;
     }
 
-    deleteCategory(category);
+    await deleteCategory(categoryId);
     setCategoryToDelete(null);
-    toast({
-      title: "Éxito",
-      description: `Categoría "${category}" eliminada correctamente`
-    });
   };
 
   const getCategoryProductCount = (category: string) => {
-    return products.filter(p => p.category === category).length;
+    return products?.filter((p: any) => p?.category === category).length;
   };
 
   return (
@@ -127,15 +133,15 @@ export function CategoryManager({ isOpen, onClose }: CategoryManagerProps) {
                   No hay categorías
                 </div>
               ) : (
-                categories.map((category) => {
-                  const productCount = getCategoryProductCount(category);
+                categories.map((category: any) => {
+                  const productCount = getCategoryProductCount(category.name);
                   return (
                     <div
-                      key={category}
+                      key={category.id}
                       className="flex items-center justify-between p-3 hover:bg-muted/50"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{category}</span>
+                        <span className="font-medium">{category.name}</span>
                         <Badge variant="secondary" className="text-xs">
                           {productCount} producto{productCount !== 1 ? 's' : ''}
                         </Badge>
@@ -143,7 +149,7 @@ export function CategoryManager({ isOpen, onClose }: CategoryManagerProps) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setCategoryToDelete(category)}
+                        onClick={() => setCategoryToDelete(category.id)} // Store ID to delete
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         disabled={productCount > 0}
                         title={productCount > 0 ? "No se puede eliminar: categoría en uso" : "Eliminar categoría"}

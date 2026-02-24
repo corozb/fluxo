@@ -1,4 +1,5 @@
 import { usePOSStore } from '@/stores/posStore';
+import { useInventory } from '@/hooks/useInventory';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -17,12 +18,16 @@ export function CartSidebar() {
     cartTax,
     cartTotal,
     currentUser,
+    saleDate,
     updateCartQuantity,
     updateCartUnitPrice,
     removeFromCart,
-    completeSale,
-    clearCart
+    clearCart,
+    toggleCheckout,
+    isCheckoutOpen
   } = usePOSStore();
+
+  const { createSale } = useInventory(); // Get mutation from hook
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [editingUnit, setEditingUnit] = useState<{ productId: string; unitIndex: number } | null>(null);
@@ -32,13 +37,36 @@ export function CartSidebar() {
   const isAdmin = currentUser?.role === 'admin';
 
   const handlePayment = async (method: 'cash' | 'card' | 'digital' | 'transfer') => {
-    setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    const saleId = completeSale(method);
-    setIsProcessing(false);
+    if (cart.length === 0) return;
     
-    if (saleId) {
-      console.log(`Sale completed: ${saleId}`);
+    setIsProcessing(true);
+    
+    try {
+      // Prepare sale data
+      const saleData = {
+        userId: currentUser?.id || "anonymous", // Fallback if no user
+        total: cartTotal,
+        items: cart.map(item => ({
+          productId: item.id,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        method,
+        date: saleDate
+      };
+
+      await createSale(saleData);
+      
+      // Clear cart on success (handled by hook success, but good to ensure UI clears)
+      // Actually hook invalidates queries, but cart is local state.
+      clearCart();
+      if (isCheckoutOpen) toggleCheckout();
+      
+    } catch (error) {
+      console.error("Payment failed", error);
+      // Toast handled by hook
+    } finally {
+      setIsProcessing(false);
     }
   };
 

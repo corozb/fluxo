@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useCategoriesStore } from '@/stores/categoriesStore';
-import { usePOSStore } from '@/stores/posStore';
+// import { useCategoriesStore } from '@/stores/categoriesStore';
+import { useInventory } from '@/hooks/useInventory';
+import { usePOSStore } from '@/stores/posStore'; // Keeping for other POS state if needed, but products are gone
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -23,38 +24,43 @@ import { Settings2, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function CategoryDropdown() {
-  const { categories, addCategory, deleteCategory } = useCategoriesStore();
-  const { products } = usePOSStore();
+  // Use real implementation from useInventory
+  const { categories, products, createCategory, deleteCategory } = useInventory(); 
+  
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
-  const handleAddCategory = () => {
-    if (newCategoryName.trim()) {
-      if (categories.includes(newCategoryName.trim())) {
+  const handleAddCategory = async () => {
+    const trimmed = newCategoryName.trim();
+    if (trimmed) {
+      if (categories.some((c: any) => c.name.toLowerCase() === trimmed.toLowerCase())) {
         toast.error('La categoría ya existe');
         return;
       }
-      addCategory(newCategoryName.trim());
-      toast.success('Categoría agregada');
+      await createCategory(trimmed);
+      // toast success handled in hook or could be here
       setNewCategoryName('');
       setIsAddDialogOpen(false);
     }
   };
 
-  const handleDeleteCategory = (category: string) => {
-    const productsInCategory = products.filter(p => p.category === category);
+  const handleDeleteCategory = async (categoryId: string) => {
+    // Find name for check
+    const categoryName = categories.find((c: any) => c.id === categoryId)?.name;
+    if (!categoryName) return;
+
+    const productsInCategory = products.filter((p: any) => p.category === categoryName);
     if (productsInCategory.length > 0) {
       toast.error(`No se puede eliminar. Hay ${productsInCategory.length} producto(s) en esta categoría`);
       return;
     }
-    deleteCategory(category);
-    toast.success('Categoría eliminada');
+    await deleteCategory(categoryId);
     setCategoryToDelete(null);
   };
 
-  const getCategoryProductCount = (category: string) => {
-    return products.filter(p => p.category === category).length;
+  const getCategoryProductCount = (categoryName: string) => {
+    return products.filter((p: any) => p.category === categoryName).length;
   };
 
   return (
@@ -77,21 +83,21 @@ export function CategoryDropdown() {
           <DropdownMenuSeparator />
           
           <div className="max-h-48 overflow-y-auto">
-            {categories.map((category) => {
-              const count = getCategoryProductCount(category);
+            {categories.map((category: any) => {
+              const count = getCategoryProductCount(category.name);
               return (
                 <DropdownMenuItem
-                  key={category}
+                  key={category.id}
                   className="flex items-center justify-between"
                   onSelect={(e) => e.preventDefault()}
                 >
-                  <span className="flex-1 truncate">{category}</span>
+                  <span className="flex-1 truncate">{category.name}</span>
                   <span className="text-xs text-muted-foreground mx-2">({count})</span>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-6 w-6 text-destructive hover:text-destructive"
-                    onClick={() => setCategoryToDelete(category)}
+                    onClick={() => setCategoryToDelete(category.id)}
                     disabled={count > 0}
                   >
                     <Trash2 className="h-3 w-3" />
@@ -133,7 +139,7 @@ export function CategoryDropdown() {
           <DialogHeader>
             <DialogTitle>Eliminar Categoría</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro de que deseas eliminar la categoría "{categoryToDelete}"?
+              ¿Estás seguro de que deseas eliminar esta categoría?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -12,6 +12,7 @@ import { DateRange } from './DateRangeFilter';
 
 interface PaymentMethodsReportProps {
   dateRange: DateRange;
+  sales: Sale[];
 }
 
 interface PaymentMethodData {
@@ -42,8 +43,7 @@ const paymentMethodColors = {
   digital: 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
 };
 
-export function PaymentMethodsReport({ dateRange }: PaymentMethodsReportProps) {
-  const { sales } = usePOSStore();
+export function PaymentMethodsReport({ dateRange, sales }: PaymentMethodsReportProps) {
   
   const paymentData = useMemo(() => {
     // Filter sales by date range

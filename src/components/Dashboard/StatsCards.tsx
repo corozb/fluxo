@@ -1,4 +1,4 @@
-import { usePOSStore } from '@/stores/posStore';
+import { usePOSStore, Sale, Product } from '@/stores/posStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, ShoppingCart, Package, TrendingUp, AlertTriangle } from 'lucide-react';
@@ -8,10 +8,11 @@ import { formatNumber } from '@/lib/utils';
 
 interface StatsCardsProps {
   dateRange: DateRange;
+  sales: Sale[];
+  products: Product[];
 }
 
-export function StatsCards({ dateRange }: StatsCardsProps) {
-  const { sales, products } = usePOSStore();
+export function StatsCards({ dateRange, sales, products }: StatsCardsProps) {
 
   // Filter sales by date range
   const periodSales = sales.filter(sale => {
@@ -27,7 +28,7 @@ export function StatsCards({ dateRange }: StatsCardsProps) {
   const totalRevenue = sales.reduce((sum, sale) => sum + sale.total, 0);
 
   // Calculate low stock items
-  const lowStockItems = products.filter(product => product.stock <= product.lowStockThreshold);
+  const lowStockItems = products?.filter(product => product.stock <= product.lowStockThreshold);
 
   // Calculate average transaction value for the period
   const avgTransaction = periodSales.length > 0 ? periodRevenue / periodSales.length : 0;
@@ -79,11 +80,11 @@ export function StatsCards({ dateRange }: StatsCardsProps) {
           <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" />
         </CardHeader>
         <CardContent>
-          <div className="text-lg sm:text-2xl font-bold text-warning">{lowStockItems.length}</div>
+          <div className="text-lg sm:text-2xl font-bold text-warning">{lowStockItems?.length}</div>
           <p className="text-xs text-muted-foreground truncate">
             Items need restocking
           </p>
-          {lowStockItems.length > 0 && (
+          {lowStockItems?.length > 0 && (
             <Badge variant="outline" className="mt-2 text-warning border-warning text-xs">
               <Package className="h-3 w-3 mr-1" />
               Low Stock

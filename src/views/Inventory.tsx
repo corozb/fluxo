@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { formatNumber } from "@/lib/utils";
 import { usePOSStore } from "@/stores/posStore";
-import { useCategoriesStore } from "@/stores/categoriesStore";
+// import { useCategoriesStore } from "@/stores/categoriesStore"; // Deprecated
+import { useInventory } from "@/hooks/useInventory";
 import { POSHeader } from "@/components/POS/POSHeader";
 import { ProductForm } from "@/components/Inventory/ProductForm";
 import { CategoryManager } from "@/components/Inventory/CategoryManager";
@@ -23,8 +24,14 @@ import { useToast } from "@/hooks/use-toast";
 
 // Interface removed or empty
 export function Inventory() {
-  const { products, deleteProduct, currentUser } = usePOSStore();
-  const { categories } = useCategoriesStore();
+  const { addToCart, currentUser } = usePOSStore();
+  const { 
+    products, 
+    isLoadingProducts, 
+    deleteProduct, 
+    categories 
+  } = useInventory();
+  
   const { toast } = useToast();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,7 +54,14 @@ export function Inventory() {
 
   // Get categories with their counts (only categories with products)
   const categoriesWithCounts = useMemo(() => {
-    const categoriesWithProducts = categories.filter((category) => (categoryProductCounts[category] || 0) > 0);
+    // Combine existing categories from DB with "All"
+    // We use the categories from useInventory (which fetches from DB)
+    // plus any categories that come from products directly to be safe
+    // Fix: categories from useInventory are objects now {id, name}, map to name
+    const categoryNames = categories.map((c: any) => c.name);
+    const uniqueCategories = Array.from(new Set([...categoryNames, ...products.map(p => p.category)]));
+    
+    const categoriesWithProducts = uniqueCategories.filter((category) => (categoryProductCounts[category] || 0) > 0);
     return [
       { name: "All", count: products.length },
       ...categoriesWithProducts.map((category) => ({
@@ -86,18 +100,21 @@ export function Inventory() {
     setIsFormOpen(true);
   };
 
-  const handleDeleteProduct = (product: any) => {
-    deleteProduct(product.id);
-    toast({
-      title: "Éxito",
-      description: `${product.name} ha sido eliminado`,
-    });
+  const handleDeleteProduct = async (product: any) => {
+    if (confirm(`¿Estás seguro de eliminar ${product.name}?`)) {
+      await deleteProduct(product.id);
+      toast({
+        title: "Éxito",
+        description: `${product.name} ha sido eliminado`,
+      });
+    }
   };
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setEditingProduct(null);
   };
+
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
