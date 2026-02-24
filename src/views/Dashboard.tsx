@@ -10,7 +10,9 @@ import { TopProductsMetrics } from '@/components/Dashboard/TopProductsMetrics';
 import { ProfitMetrics } from '@/components/Dashboard/ProfitMetrics';
 import { SalesByCategoryTable } from '@/components/Dashboard/SalesByCategoryTable';
 import { PaymentMethodsReport } from '@/components/Dashboard/PaymentMethodsReport';
-import { usePOSStore } from '@/stores/posStore';
+// import { usePOSStore } from '@/stores/posStore'; // No longer needed for data, check if needed for other things?
+// Actually POSStore still has layout state?? No, layout is in useDashboardStore.
+// POSStore has sales and products. We replaced them.
 import { 
   DndContext, 
   closestCenter, 
@@ -30,9 +32,14 @@ import { useDashboardStore } from '@/stores/dashboardStore';
 import { SortableWidget } from '@/components/Dashboard/SortableWidget';
 import { DashboardControls } from '@/components/Dashboard/DashboardControls';
 
+import { useSales } from '@/hooks/useSales';
+import { useInventory } from '@/hooks/useInventory';
+
 // Interface removed or empty
 export function Dashboard() {
-  const { sales, products } = usePOSStore();
+  // const { sales, products } = usePOSStore(); // Removed
+  const { sales } = useSales();
+  const { products } = useInventory();
   const { layout, updateLayout, isEditMode, hiddenWidgets } = useDashboardStore();
   
   const [dateRange, setDateRange] = useState<DateRange>({

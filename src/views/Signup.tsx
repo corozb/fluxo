@@ -4,56 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signup } from "@/actions/auth.actions";
 
-interface LoginProps {
-  onLogin?: () => void;
-}
+import { createClient } from "@/lib/supabase";
 
-export function Login({ onLogin }: LoginProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        toast.error("Error al iniciar sesión", {
-          description: error.message === "Invalid login credentials" 
-            ? "Credenciales incorrectas. Por favor verifica tu correo y contraseña." 
-            : error.message
-        });
-        return;
-      }
-
-      toast.success("¡Bienvenido de nuevo!");
-      
-      // Trigger callback if provided, otherwise let AuthSync and router handle redirection
-      if (onLogin) {
-        onLogin();
-      } else {
-        router.push("/pos");
-      }
-      
-    } catch (err) {
-      toast.error("Ocurrió un error inesperado");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
@@ -78,12 +38,44 @@ export function Login({ onLogin }: LoginProps) {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    
+    // Explicitly set default role if not in form
+    if (!formData.get("role")) {
+      formData.set("role", "VENDOR");
+    }
+
+    try {
+      const result = await signup(formData);
+
+      if (result.error) {
+        toast.error("Error en el registro", {
+          description: result.error
+        });
+      } else {
+        toast.success("¡Cuenta creada exitosamente!", {
+          description: "Por favor verifica tu correo para confirmar la cuenta."
+        });
+        router.push("/login");
+      }
+    } catch (err) {
+      toast.error("Ocurrió un error inesperado");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       {/* Background decoration */}
       <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] opacity-40" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-accent/20 rounded-full blur-[100px] opacity-40" />
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] opacity-40" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-accent/20 rounded-full blur-[100px] opacity-40" />
       </div>
 
       <Card className="w-full max-w-md border-border/50 shadow-xl backdrop-blur-sm bg-card/95">
@@ -91,52 +83,59 @@ export function Login({ onLogin }: LoginProps) {
           <div className="mx-auto w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2 ring-1 ring-primary/20">
             <span className="text-primary font-bold text-xl">F</span>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Fluxo POS</CardTitle>
-          <CardDescription>Ingresa tus credenciales para acceder</CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight">Crear Cuenta</CardTitle>
+          <CardDescription>Regístrate para comenzar a usar Fluxo POS</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
+              <Label htmlFor="name">Nombre completo</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="nombre@empresa.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Juan Pérez"
                 required
                 className="bg-background/50"
               />
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Contraseña</Label>
-                <Link 
-                  href="/forgot-password" 
-                  className="text-xs text-primary hover:underline"
-                >
-                  ¿Olvidaste tu contraseña?
-                </Link>
-              </div>
+              <Label htmlFor="email">Correo electrónico</Label>
               <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="email"
+                name="email"
+                type="email"
+                placeholder="nombre@empresa.com"
                 required
                 className="bg-background/50"
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Contraseña</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                required
+                minLength={6}
+                className="bg-background/50"
+              />
+            </div>
+            
+            {/* Role selection is hidden/defaulted for now, or we could add a selector if needed */}
+            <input type="hidden" name="role" value="VENDOR" />
+
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Ingresando..." : "Ingresar"}
+              {isLoading ? "Registrando..." : "Registrarse"}
             </Button>
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">O continuar con</span>
+                <span className="bg-card px-2 text-muted-foreground">O registrarse con</span>
               </div>
             </div>
             <Button 
@@ -164,15 +163,15 @@ export function Login({ onLogin }: LoginProps) {
                   fill="#EA4335"
                 />
               </svg>
-              Iniciar sesión con Google
+              Google
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center border-t pt-6">
           <p className="text-sm text-muted-foreground">
-            ¿No tienes una cuenta?{" "}
-            <Link href="/signup" className="text-primary font-medium hover:underline">
-              Regístrate
+            ¿Ya tienes una cuenta?{" "}
+            <Link href="/login" className="text-primary font-medium hover:underline">
+              Inicia sesión
             </Link>
           </p>
         </CardFooter>

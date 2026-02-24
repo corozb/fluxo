@@ -48,7 +48,7 @@ export function SalesByCategoryTable({ dateRange }: SalesByCategoryTableProps) {
 
     filteredSales.forEach(sale => {
       sale.items.forEach(item => {
-        const product = products.find(p => p.id === item.id);
+        const product = products?.find(p => p.id === item.id);
         const category = item.category || product?.category || 'Sin categoría';
         const productName = item.name;
 

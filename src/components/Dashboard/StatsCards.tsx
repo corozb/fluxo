@@ -27,7 +27,7 @@ export function StatsCards({ dateRange }: StatsCardsProps) {
   const totalRevenue = sales.reduce((sum, sale) => sum + sale.total, 0);
 
   // Calculate low stock items
-  const lowStockItems = products.filter(product => product.stock <= product.lowStockThreshold);
+  const lowStockItems = products?.filter(product => product.stock <= product.lowStockThreshold);
 
   // Calculate average transaction value for the period
   const avgTransaction = periodSales.length > 0 ? periodRevenue / periodSales.length : 0;
@@ -79,11 +79,11 @@ export function StatsCards({ dateRange }: StatsCardsProps) {
           <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" />
         </CardHeader>
         <CardContent>
-          <div className="text-lg sm:text-2xl font-bold text-warning">{lowStockItems.length}</div>
+          <div className="text-lg sm:text-2xl font-bold text-warning">{lowStockItems?.length}</div>
           <p className="text-xs text-muted-foreground truncate">
             Items need restocking
           </p>
-          {lowStockItems.length > 0 && (
+          {lowStockItems?.length > 0 && (
             <Badge variant="outline" className="mt-2 text-warning border-warning text-xs">
               <Package className="h-3 w-3 mr-1" />
               Low Stock

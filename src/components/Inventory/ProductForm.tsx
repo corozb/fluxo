@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { usePOSStore, Product } from "@/stores/posStore";
-import { useCategoriesStore } from "@/stores/categoriesStore";
+import { Product } from "@/stores/posStore"; // keep Product interface for now or move it
+// import { useCategoriesStore } from "@/stores/categoriesStore";
+import { useInventory } from "@/hooks/useInventory";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,18 +34,19 @@ interface FormErrors {
 }
 
 export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
-  const { addProduct, updateProduct } = usePOSStore();
-  const { categories } = useCategoriesStore();
+  const { createProduct, updateProduct, categories } = useInventory();
   const { toast } = useToast();
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
     price: "",
     cost: "",
+    categoryId: "",
     category: "",
-    stock: "",
-    lowStockThreshold: "10",
+    stock: "1",
+    lowStockThreshold: "0",
     description: "",
     barcode: "",
   });
@@ -58,6 +60,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
         name: product.name || "",
         price: product.price?.toString() || "",
         cost: product.cost?.toString() || "",
+        categoryId: (product as any).categoryId|| "",
         category: product.category || "",
         stock: product.stock?.toString() || "",
         lowStockThreshold: product.lowStockThreshold?.toString() || "10",
@@ -69,6 +72,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
         name: "",
         price: "",
         cost: "",
+        categoryId: "",
         category: "",
         stock: "",
         lowStockThreshold: "10",
@@ -94,7 +98,7 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -106,32 +110,54 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
       return;
     }
 
-    const productData = {
-      name: formData.name,
-      price: parseFloat(formData.price),
-      cost: formData.cost ? parseFloat(formData.cost) : undefined,
-      category: formData.category,
-      stock: parseInt(formData.stock),
-      lowStockThreshold: parseInt(formData.lowStockThreshold),
-      description: formData.description,
-      barcode: formData.barcode,
-    };
+    setIsSubmitting(true);
 
-    if (product) {
-      updateProduct(product.id, productData);
+    try {
+      const productData = new FormData();
+      productData.append("name", formData.name);
+      productData.append("price", formData.price);
+      if (formData.cost) productData.append("cost", formData.cost);
+      const selectedCat = categories.find((c: any) => c.name === formData.category);
+      if (selectedCat) {
+        productData.append("category", selectedCat.name);
+        productData.append("categoryId", selectedCat.id);
+      } else {
+         // Should not happen if UI is correct, or maybe we allow creating new category on fly?
+         // For now fallback or error?
+         // If we created a category on the fly, we should have its ID.
+         // Let's assume for now user selects existing.
+         console.error("Category ID not found for name:", formData.category);
+      }
+      // productData.append("categoryName", formData.category); // Removed
+      productData.append("stock", formData.stock);
+      productData.append("lowStockThreshold", formData.lowStockThreshold);
+      if (formData.description) productData.append("description", formData.description);
+      if (formData.barcode) productData.append("barcode", formData.barcode);
+
+      if (product) {
+        await updateProduct({ id: product.id, productData });
+        toast({
+          title: "Éxito",
+          description: "Producto actualizado correctamente",
+        });
+      } else {
+        await createProduct(productData);
+        toast({
+          title: "Éxito",
+          description: "Producto agregado correctamente",
+        });
+      }
+      onClose();
+    } catch (error) {
+      console.error(error);
       toast({
-        title: "Éxito",
-        description: "Producto actualizado correctamente",
+        title: "Error",
+        description: "Error al guardar el producto",
+        variant: "destructive",
       });
-    } else {
-      addProduct(productData);
-      toast({
-        title: "Éxito",
-        description: "Producto agregado correctamente",
-      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    onClose();
   };
 
   const handleChange = (field: string, value: string) => {
@@ -247,9 +273,9 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
                   <SelectValue placeholder="Seleccionar categoría" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                  {categories.map((category: any) => (
+                    <SelectItem key={category.id} value={category.name}>
+                      {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -330,8 +356,8 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit" variant="pos">
-              {product ? "Actualizar" : "Agregar"} Producto
+            <Button type="submit" variant="pos" disabled={isSubmitting}>
+              {isSubmitting ? "Guardando..." : (product ? "Actualizar" : "Agregar") + " Producto"}
             </Button>
           </DialogFooter>
         </form>
