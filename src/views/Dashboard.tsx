@@ -69,14 +69,14 @@ export function Dashboard() {
   };
 
   const widgetComponents: Record<string, React.ReactNode> = {
-    'stats-cards': <StatsCards dateRange={dateRange} />,
+    'stats-cards': <StatsCards dateRange={dateRange} sales={sales} products={products} />,
     'sales-metrics': <SalesMetrics sales={sales} dateRange={dateRange} />,
     'top-products-metrics': <TopProductsMetrics sales={sales} products={products} dateRange={dateRange} />,
     'profit-metrics': <ProfitMetrics sales={sales} dateRange={dateRange} />,
-    'sales-by-category': <SalesByCategoryTable dateRange={dateRange} />,
-    'payment-methods': <PaymentMethodsReport dateRange={dateRange} />,
-    'sales-chart': <SalesChart dateRange={dateRange} />,
-    'top-products-list': <TopProducts dateRange={dateRange} />,
+    'sales-by-category': <SalesByCategoryTable dateRange={dateRange} sales={sales} products={products} />,
+    'payment-methods': <PaymentMethodsReport dateRange={dateRange} sales={sales} />,
+    'sales-chart': <SalesChart dateRange={dateRange} sales={sales} />,
+    'top-products-list': <TopProducts dateRange={dateRange} sales={sales} products={products} />,
   };
 
   const widgetSpans: Record<string, string> = {

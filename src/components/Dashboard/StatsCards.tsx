@@ -1,4 +1,4 @@
-import { usePOSStore } from '@/stores/posStore';
+import { usePOSStore, Sale, Product } from '@/stores/posStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, ShoppingCart, Package, TrendingUp, AlertTriangle } from 'lucide-react';
@@ -8,10 +8,11 @@ import { formatNumber } from '@/lib/utils';
 
 interface StatsCardsProps {
   dateRange: DateRange;
+  sales: Sale[];
+  products: Product[];
 }
 
-export function StatsCards({ dateRange }: StatsCardsProps) {
-  const { sales, products } = usePOSStore();
+export function StatsCards({ dateRange, sales, products }: StatsCardsProps) {
 
   // Filter sales by date range
   const periodSales = sales.filter(sale => {

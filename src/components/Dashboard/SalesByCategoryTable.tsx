@@ -17,11 +17,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { usePOSStore } from '@/stores/posStore';
+import { usePOSStore, Sale, Product } from '@/stores/posStore';
 import { DateRange } from './DateRangeFilter';
 
 interface SalesByCategoryTableProps {
   dateRange: DateRange;
+  sales: Sale[];
+  products: Product[];
 }
 
 interface CategoryData {
@@ -35,8 +37,7 @@ interface CategoryData {
   }[];
 }
 
-export function SalesByCategoryTable({ dateRange }: SalesByCategoryTableProps) {
-  const { sales, products } = usePOSStore();
+export function SalesByCategoryTable({ dateRange, sales, products }: SalesByCategoryTableProps) {
 
   const categoryData = useMemo(() => {
     const filteredSales = sales.filter(sale => {

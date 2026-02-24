@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { usePOSStore } from '@/stores/posStore';
+import { usePOSStore, Sale } from '@/stores/posStore';
 import { formatNumber } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Line } from 'react-chartjs-2';
@@ -29,10 +29,10 @@ ChartJS.register(
 
 interface SalesChartProps {
   dateRange: DateRange;
+  sales: Sale[];
 }
 
-export function SalesChart({ dateRange }: SalesChartProps) {
-  const { sales } = usePOSStore();
+export function SalesChart({ dateRange, sales }: SalesChartProps) {
 
   const chartData = useMemo(() => {
     // Generate array of dates within the range
