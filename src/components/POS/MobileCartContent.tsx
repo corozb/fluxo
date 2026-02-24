@@ -22,6 +22,7 @@ export function MobileCartContent({ onClose }: MobileCartContentProps) {
     cartTax,
     cartTotal,
     currentUser,
+    saleDate,
     updateCartQuantity,
     updateCartUnitPrice,
     removeFromCart,
@@ -54,7 +55,8 @@ export function MobileCartContent({ onClose }: MobileCartContentProps) {
           quantity: item.quantity,
           price: item.price
         })),
-        method 
+        method,
+        date: saleDate
       };
 
       await createSale(saleData);

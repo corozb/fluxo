@@ -8,8 +8,9 @@ export async function createSale(data: {
   items: { productId: string; quantity: number; price: number }[];
   total: number;
   method: string;
+  date?: Date;
 }) {
-  const { userId, items, total, method } = data;
+  const { userId, items, total, method, date } = data;
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -19,6 +20,7 @@ export async function createSale(data: {
           userId,
           total,
           paymentMethod: method,
+          ...(date ? { createdAt: new Date(date) } : {}),
           items: {
             create: items.map((item) => ({
               productId: item.productId,

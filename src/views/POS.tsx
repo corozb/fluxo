@@ -3,9 +3,17 @@ import { SearchBar } from '@/components/POS/SearchBar';
 import { ProductGrid } from '@/components/POS/ProductGrid';
 import { CartSidebar } from '@/components/POS/CartSidebar';
 import { MobileCartButton } from '@/components/POS/MobileCartButton';
+import { useEffect } from 'react';
+import { usePOSStore } from '@/stores/posStore';
 
 // Interface removed or empty
 export function POS() {
+  const { setSaleDate } = usePOSStore();
+
+  useEffect(() => {
+    setSaleDate(new Date());
+  }, [setSaleDate]);
+
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <POSHeader />

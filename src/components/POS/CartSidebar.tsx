@@ -18,6 +18,7 @@ export function CartSidebar() {
     cartTax,
     cartTotal,
     currentUser,
+    saleDate,
     updateCartQuantity,
     updateCartUnitPrice,
     removeFromCart,
@@ -50,8 +51,8 @@ export function CartSidebar() {
           quantity: item.quantity,
           price: item.price
         })),
-        method // although createSale action signature currently doesn't take method, we should update it eventually. 
-        // For now, adhere to current action signature: { userId, items, total }
+        method,
+        date: saleDate
       };
 
       await createSale(saleData);
