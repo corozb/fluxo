@@ -21,7 +21,9 @@ export function CartSidebar() {
     updateCartQuantity,
     updateCartUnitPrice,
     removeFromCart,
-    clearCart
+    clearCart,
+    toggleCheckout,
+    isCheckoutOpen
   } = usePOSStore();
 
   const { createSale } = useInventory(); // Get mutation from hook
@@ -57,6 +59,7 @@ export function CartSidebar() {
       // Clear cart on success (handled by hook success, but good to ensure UI clears)
       // Actually hook invalidates queries, but cart is local state.
       clearCart();
+      if (isCheckoutOpen) toggleCheckout();
       
     } catch (error) {
       console.error("Payment failed", error);

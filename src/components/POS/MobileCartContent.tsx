@@ -1,4 +1,5 @@
 import { usePOSStore } from '@/stores/posStore';
+import { useInventory } from '@/hooks/useInventory';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,11 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Minus, Plus, Trash2, CreditCard, DollarSign, Smartphone, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 
-export function MobileCartContent() {
+interface MobileCartContentProps {
+  onClose?: () => void;
+}
+
+export function MobileCartContent({ onClose }: MobileCartContentProps) {
   const {
     cart,
     cartSubtotal,
@@ -20,9 +25,12 @@ export function MobileCartContent() {
     updateCartQuantity,
     updateCartUnitPrice,
     removeFromCart,
-    completeSale,
-    clearCart
+    clearCart,
+    toggleCheckout,
+    isCheckoutOpen
   } = usePOSStore();
+
+  const { createSale } = useInventory();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [editingUnit, setEditingUnit] = useState<{ productId: string; unitIndex: number } | null>(null);
@@ -32,13 +40,33 @@ export function MobileCartContent() {
   const isAdmin = currentUser?.role === 'admin';
 
   const handlePayment = async (method: 'cash' | 'card' | 'digital' | 'transfer') => {
-    setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    const saleId = completeSale(method);
-    setIsProcessing(false);
+    if (cart.length === 0) return;
     
-    if (saleId) {
-      console.log(`Sale completed: ${saleId}`);
+    setIsProcessing(true);
+    
+    try {
+      // Prepare sale data
+      const saleData = {
+        userId: currentUser?.id || "anonymous",
+        total: cartTotal,
+        items: cart.map(item => ({
+          productId: item.id,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        method 
+      };
+
+      await createSale(saleData);
+      
+      clearCart();
+      if (isCheckoutOpen) toggleCheckout();
+      if (onClose) onClose();
+      
+    } catch (error) {
+      console.error("Payment failed", error);
+    } finally {
+      setIsProcessing(false);
     }
   };
 

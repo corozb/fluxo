@@ -119,7 +119,11 @@ export function useInventory() {
     onSuccess: (result) => {
       if (result.success) {
         queryClient.invalidateQueries({ queryKey: ["products"] }); // Update stock
-        toast({ title: "Venta Exitosa", description: "La venta ha sido registrada correctamente" });
+        toast({ 
+          title: "Venta Exitosa", 
+          description: "La venta ha sido registrada correctamente",
+          className: "bg-green-600 text-white border-green-700"
+        });
       } else {
         toast({ title: "Error", description: "No se pudo registrar la venta", variant: "destructive" });
       }
