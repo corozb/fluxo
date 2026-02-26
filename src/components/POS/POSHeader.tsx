@@ -1,6 +1,7 @@
 import { usePOSStore } from '@/stores/posStore';
+import { createClient } from '@/lib/supabase';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -23,12 +24,16 @@ interface POSHeaderProps {
 
 export function POSHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const currentPage = pathname?.split('/').pop() || 'pos'; // naive check or use strict matching
   const { currentUser, logout } = usePOSStore();
   const { theme, toggleTheme } = useTheme();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const supabase = createClient();
     logout();
+    await supabase.auth.signOut();
+    router.push('/login');
   };
 
   return (
