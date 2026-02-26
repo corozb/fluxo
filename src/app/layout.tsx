@@ -11,8 +11,8 @@ import AuthSync from "@/components/auth/AuthSync";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Gleam POS",
-  description: "Modern POS System",
+  title: "Fluxo POS || Virus Tennis",
+  description: "Maneja Inventario, Clientes y Ventas",
 };
 
 export default function RootLayout({

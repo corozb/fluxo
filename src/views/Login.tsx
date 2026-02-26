@@ -91,7 +91,7 @@ export function Login({ onLogin }: LoginProps) {
           <div className="mx-auto w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2 ring-1 ring-primary/20">
             <span className="text-primary font-bold text-xl">F</span>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Fluxo POS</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">Fluxo</CardTitle>
           <CardDescription>Ingresa tus credenciales para acceder</CardDescription>
         </CardHeader>
         <CardContent>

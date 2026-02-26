@@ -126,17 +126,13 @@ export function ProductGrid() {
               
               <div className="space-y-2">
                 <div className="flex items-start justify-between">
-                  <h3 className="font-semibold text-base text-card-foreground group-hover:text-primary transition-colors line-clamp-2">
+                  <h3 className="font-semibold text-base text-card-foreground group-hover:text-primary transition-colors line-clamp-1">
                     {product.name}
                   </h3>
                   {product.stock <= product.lowStockThreshold && (
                     <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 ml-1" />
                   )}
                 </div>
-                
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {product.description}
-                </p>
                 
                 {product.barcode && (
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">

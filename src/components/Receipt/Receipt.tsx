@@ -30,7 +30,7 @@ export function Receipt({ sale, onClose }: ReceiptProps) {
 
     // Header
     pdf.setFontSize(20);
-    pdf.text('ProPOS Receipt', pageWidth / 2, yPosition, { align: 'center' });
+    pdf.text('Fluxo Receipt', pageWidth / 2, yPosition, { align: 'center' });
     yPosition += 20;
 
     pdf.setFontSize(12);
@@ -73,8 +73,8 @@ export function Receipt({ sale, onClose }: ReceiptProps) {
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg print:shadow-none print:max-w-none">
       <div ref={receiptRef}>
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">ProPOS</h1>
-          <p className="text-sm text-gray-600">Professional Point of Sale</p>
+          <h1 className="text-2xl font-bold text-gray-800">Fluxo</h1>
+          <p className="text-sm text-gray-600">Registro de Ventas</p>
           <div className="w-16 h-px bg-gray-300 mx-auto mt-2"></div>
         </div>
 
