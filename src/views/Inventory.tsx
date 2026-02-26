@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { formatNumber } from "@/lib/utils";
 import { usePOSStore } from "@/stores/posStore";
 // import { useCategoriesStore } from "@/stores/categoriesStore"; // Deprecated
@@ -11,17 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { BarcodeScanner } from "@/components/POS/BarcodeScanner";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Plus, Search, MoreHorizontal, Edit, Trash2, AlertTriangle, Tag, X, ScanBarcode } from "lucide-react";
+import { Plus, Search, AlertTriangle, Tag, X, ScanBarcode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from '@/hooks/use-mobile';
+import { SwipeableProductRow } from "@/components/Inventory/SwipeableProductRowProps";
 
 // Interface removed or empty
 export function Inventory() {
@@ -32,8 +28,15 @@ export function Inventory() {
     deleteProduct, 
     categories 
   } = useInventory();
-  
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  const [isTabletOrMobile, setIsTabletOrMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsTabletOrMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -281,91 +284,31 @@ export function Inventory() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nombre</TableHead>
-                    <TableHead>Categoría</TableHead>
-                    {isAdmin && <TableHead>Costo</TableHead>}
-                    <TableHead>Precio</TableHead>
-                    <TableHead>Margen</TableHead>
-                    <TableHead>Stock</TableHead>
-                    {isAdmin && <TableHead>Costo Total</TableHead>}
+                    {!isMobile && (
+                      <>
+                      <TableHead>Precio</TableHead>
+                        {isAdmin &&<TableHead className="text-left">Costo</TableHead>}
+                        {isAdmin && <TableHead>Margen</TableHead>}
+                      </>
+                    )}
+                    {isMobile && <TableHead>Costo</TableHead>}
+                    {isAdmin && <TableHead>Stock</TableHead>}
                     <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
+
+                    {isAdmin && <TableHead>Costo Total</TableHead>}
+                   {!isTabletOrMobile && isAdmin && <TableHead className="text-right">Acciones</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredProducts.map((product) => {
-                    const margin = product.cost
-                      ? (((product.price - product.cost) / product.price) * 100).toFixed(1)
-                      : null;
-
-                    return (
-                      <TableRow key={product.id}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{product.name}</p>
-                            {product.barcode && <p className="text-xs text-muted-foreground">{product.barcode}</p>}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{product.category}</Badge>
-                        </TableCell>
-                        {isAdmin && (
-                          <TableCell className="text-muted-foreground">
-                            {product.cost ? formatNumber(product.cost, "$") : "-"}
-                          </TableCell>
-                        )}
-                        <TableCell className="font-medium">{formatNumber(product.price, "$")}</TableCell>
-                        <TableCell>
-                          {margin ? (
-                            <Badge variant={parseFloat(margin) >= 30 ? "secondary" : "outline"}>{margin}%</Badge>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <span>{product.stock}</span>
-                            {product.stock <= product.lowStockThreshold && (
-                              <AlertTriangle className="h-4 w-4 text-warning" />
-                            )}
-                          </div>
-                        </TableCell>
-                        {isAdmin && (
-                          <TableCell className="font-medium">
-                            {product.cost
-                              ? formatNumber(product.cost * product.stock, "$")
-                              : "-"}
-                          </TableCell>
-                        )}
-                        <TableCell>
-                          <Badge variant={product.stock > product.lowStockThreshold ? "secondary" : "destructive"}>
-                            {product.stock > product.lowStockThreshold ? "En Stock" : "Stock Bajo"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleEditProduct(product)}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Editar
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleDeleteProduct(product)}
-                                className="text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Eliminar
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                  {filteredProducts.map((product) => (
+                    <SwipeableProductRow
+                      key={product.id}
+                      product={product}
+                      onEdit={handleEditProduct}
+                      onDelete={handleDeleteProduct}
+                      isTabletOrMobile={isTabletOrMobile}
+                    />
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>
