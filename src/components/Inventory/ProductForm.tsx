@@ -135,19 +135,24 @@ export function ProductForm({ isOpen, onClose, product }: ProductFormProps) {
       if (formData.barcode) productData.append("barcode", formData.barcode);
 
       if (product) {
-        await updateProduct({ id: product.id, productData });
-        toast({
-          title: "Éxito",
-          description: "Producto actualizado correctamente",
-        });
+        const result = await updateProduct({ id: product.id, productData });
+        if (result.success) {
+          toast({
+            title: "Éxito",
+            description: "Producto actualizado correctamente",
+          });
+          onClose();
+        }
       } else {
-        await createProduct(productData);
-        toast({
-          title: "Éxito",
-          description: "Producto agregado correctamente",
-        });
+        const result = await createProduct(productData);
+        if (result.success) {
+          toast({
+            title: "Éxito",
+            description: "Producto agregado correctamente",
+          });
+          onClose();
+        }
       }
-      onClose();
     } catch (error) {
       console.error(error);
       toast({

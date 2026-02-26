@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Plus, Search, MoreHorizontal, Edit, Trash2, AlertTriangle, Tag, X, ScanBarcode } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -94,6 +95,21 @@ export function Inventory() {
   }, [products, selectedCategory, searchQuery]);
 
   const lowStockProducts = products.filter((p) => p.stock <= p.lowStockThreshold);
+
+  const totalInventoryCost = useMemo(
+    () => filteredProducts.reduce((acc, p) => acc + (p.cost ? p.cost * p.stock : 0), 0),
+    [filteredProducts]
+  );
+
+  const costByCategory = useMemo(() => {
+    const map: Record<string, number> = {};
+    filteredProducts.forEach((p) => {
+      if (p.cost) {
+        map[p.category] = (map[p.category] || 0) + p.cost * p.stock;
+      }
+    });
+    return Object.entries(map).sort((a, b) => b[1] - a[1]);
+  }, [filteredProducts]);
 
   const handleEditProduct = (product: any) => {
     setEditingProduct(product);
@@ -188,25 +204,75 @@ export function Inventory() {
 
       <div className="flex-1 overflow-auto p-6 pb-24 lg:pb-6">
         <div className="space-y-6">
-          {lowStockProducts.length > 0 && (
-            <Card className="">
-              <CardHeader>
-                <CardTitle className="flex items-center text-warning">
-                  <AlertTriangle className="h-5 w-5 mr-2" />
-                  Alerta de Stock Bajo
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-3">Los siguientes productos tienen stock bajo:</p>
-                <div className="flex flex-wrap gap-2">
-                  {lowStockProducts.map((product) => (
-                    <Badge key={product.id} variant="outline" className="border-warning text-warning">
-                      {product.name} ({product.stock} restantes)
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          {(isAdmin || lowStockProducts.length > 0) && (
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              {isAdmin && (() => {
+                const CATEGORY_COLORS = [
+                  "text-blue-500",
+                  "text-violet-500",
+                  "text-emerald-500",
+                  "text-amber-500",
+                  "text-rose-500",
+                  "text-cyan-500",
+                  "text-orange-500",
+                  "text-teal-500",
+                ];
+                return (
+                  <Card className="flex-1 w-full">
+                    <CardContent className="p-0 px-4">
+                      <Accordion type="single" collapsible>
+                        <AccordionItem value="cost-detail" className="border-b-0">
+                          <AccordionTrigger className="hover:no-underline">
+                            <div className="flex items-center justify-between w-full pr-2">
+                              <span className="text-sm text-muted-foreground">Costo Total</span>
+                              <span className="text-2xl font-bold">{formatNumber(totalInventoryCost, "$")}</span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="space-y-2.5 pb-2">
+                              {costByCategory.length === 0 ? (
+                                <p className="text-sm text-muted-foreground">Sin datos de costo disponibles.</p>
+                              ) : (
+                                costByCategory.map(([category, total], idx) => (
+                                  <div key={category} className="flex items-baseline gap-2">
+                                    <span className={`text-sm font-semibold shrink-0 ${CATEGORY_COLORS[idx % CATEGORY_COLORS.length]}`}>
+                                      {category}
+                                    </span>
+                                    <span className="flex-1 border-b border-dashed border-muted-foreground/40 mb-0.5" />
+                                    <span className="text-base font-semibold shrink-0">{formatNumber(total, "$")}</span>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
+
+              {lowStockProducts.length > 0 && (
+                <Card className="flex-1 w-full">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-warning">
+                      <AlertTriangle className="h-5 w-5 mr-2" />
+                      Alerta de Stock Bajo
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">Los siguientes productos tienen stock bajo:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {lowStockProducts.map((product) => (
+                        <Badge key={product.id} variant="outline" className="border-warning text-warning">
+                          {product.name} ({product.stock} restantes)
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           )}
 
           <Card>
@@ -216,10 +282,11 @@ export function Inventory() {
                   <TableRow>
                     <TableHead>Nombre</TableHead>
                     <TableHead>Categoría</TableHead>
-                    <TableHead>Costo</TableHead>
+                    {isAdmin && <TableHead>Costo</TableHead>}
                     <TableHead>Precio</TableHead>
                     <TableHead>Margen</TableHead>
                     <TableHead>Stock</TableHead>
+                    {isAdmin && <TableHead>Costo Total</TableHead>}
                     <TableHead>Estado</TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
                   </TableRow>
@@ -241,9 +308,11 @@ export function Inventory() {
                         <TableCell>
                           <Badge variant="outline">{product.category}</Badge>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {product.cost ? formatNumber(product.cost, "$") : "-"}
-                        </TableCell>
+                        {isAdmin && (
+                          <TableCell className="text-muted-foreground">
+                            {product.cost ? formatNumber(product.cost, "$") : "-"}
+                          </TableCell>
+                        )}
                         <TableCell className="font-medium">{formatNumber(product.price, "$")}</TableCell>
                         <TableCell>
                           {margin ? (
@@ -260,6 +329,13 @@ export function Inventory() {
                             )}
                           </div>
                         </TableCell>
+                        {isAdmin && (
+                          <TableCell className="font-medium">
+                            {product.cost
+                              ? formatNumber(product.cost * product.stock, "$")
+                              : "-"}
+                          </TableCell>
+                        )}
                         <TableCell>
                           <Badge variant={product.stock > product.lowStockThreshold ? "secondary" : "destructive"}>
                             {product.stock > product.lowStockThreshold ? "En Stock" : "Stock Bajo"}
