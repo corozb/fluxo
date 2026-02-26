@@ -204,71 +204,75 @@ export function Inventory() {
 
       <div className="flex-1 overflow-auto p-6 pb-24 lg:pb-6">
         <div className="space-y-6">
-          {isAdmin && (() => {
-            const CATEGORY_COLORS = [
-              "text-blue-500",
-              "text-violet-500",
-              "text-emerald-500",
-              "text-amber-500",
-              "text-rose-500",
-              "text-cyan-500",
-              "text-orange-500",
-              "text-teal-500",
-            ];
-            return (
-              <Card>
-                <CardContent className="p-0 px-4">
-                  <Accordion type="single" collapsible>
-                    <AccordionItem value="cost-detail" className="border-b-0">
-                      <AccordionTrigger className="hover:no-underline">
-                        <div className="flex items-center justify-between w-full pr-2">
-                          <span className="text-sm text-muted-foreground">Costo Total en Inventario</span>
-                          <span className="text-2xl font-bold">{formatNumber(totalInventoryCost, "$")}</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2.5 pb-2">
-                          {costByCategory.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">Sin datos de costo disponibles.</p>
-                          ) : (
-                            costByCategory.map(([category, total], idx) => (
-                              <div key={category} className="flex items-baseline gap-2">
-                                <span className={`text-sm font-semibold shrink-0 ${CATEGORY_COLORS[idx % CATEGORY_COLORS.length]}`}>
-                                  {category}
-                                </span>
-                                <span className="flex-1 border-b border-dashed border-muted-foreground/40 mb-0.5" />
-                                <span className="text-base font-semibold shrink-0">{formatNumber(total, "$")}</span>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </CardContent>
-              </Card>
-            );
-          })()}
+          {(isAdmin || lowStockProducts.length > 0) && (
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              {isAdmin && (() => {
+                const CATEGORY_COLORS = [
+                  "text-blue-500",
+                  "text-violet-500",
+                  "text-emerald-500",
+                  "text-amber-500",
+                  "text-rose-500",
+                  "text-cyan-500",
+                  "text-orange-500",
+                  "text-teal-500",
+                ];
+                return (
+                  <Card className="flex-1 w-full">
+                    <CardContent className="p-0 px-4">
+                      <Accordion type="single" collapsible>
+                        <AccordionItem value="cost-detail" className="border-b-0">
+                          <AccordionTrigger className="hover:no-underline">
+                            <div className="flex items-center justify-between w-full pr-2">
+                              <span className="text-sm text-muted-foreground">Costo Total</span>
+                              <span className="text-2xl font-bold">{formatNumber(totalInventoryCost, "$")}</span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="space-y-2.5 pb-2">
+                              {costByCategory.length === 0 ? (
+                                <p className="text-sm text-muted-foreground">Sin datos de costo disponibles.</p>
+                              ) : (
+                                costByCategory.map(([category, total], idx) => (
+                                  <div key={category} className="flex items-baseline gap-2">
+                                    <span className={`text-sm font-semibold shrink-0 ${CATEGORY_COLORS[idx % CATEGORY_COLORS.length]}`}>
+                                      {category}
+                                    </span>
+                                    <span className="flex-1 border-b border-dashed border-muted-foreground/40 mb-0.5" />
+                                    <span className="text-base font-semibold shrink-0">{formatNumber(total, "$")}</span>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
 
-          {lowStockProducts.length > 0 && (
-            <Card className="">
-              <CardHeader>
-                <CardTitle className="flex items-center text-warning">
-                  <AlertTriangle className="h-5 w-5 mr-2" />
-                  Alerta de Stock Bajo
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-3">Los siguientes productos tienen stock bajo:</p>
-                <div className="flex flex-wrap gap-2">
-                  {lowStockProducts.map((product) => (
-                    <Badge key={product.id} variant="outline" className="border-warning text-warning">
-                      {product.name} ({product.stock} restantes)
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+              {lowStockProducts.length > 0 && (
+                <Card className="flex-1 w-full">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-warning">
+                      <AlertTriangle className="h-5 w-5 mr-2" />
+                      Alerta de Stock Bajo
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">Los siguientes productos tienen stock bajo:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {lowStockProducts.map((product) => (
+                        <Badge key={product.id} variant="outline" className="border-warning text-warning">
+                          {product.name} ({product.stock} restantes)
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           )}
 
           <Card>
