@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { CloudCog } from 'lucide-react';
 import { revalidatePath } from "next/cache";
 
@@ -89,6 +90,11 @@ export async function createProduct(formData: FormData) {
 
   } catch (error) {
     console.error("Error creating product:", error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002' && String(error.meta?.target).includes('barcode')) {
+        return { success: false, error: "Ya existe un producto con este código de barras" };
+      }
+    }
     return { success: false, error: "Failed to create product" };
   }
 }
@@ -128,6 +134,11 @@ export async function updateProduct(id: string, formData: FormData) {
 
   } catch (error) {
     console.error("Error updating product:", error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002' && String(error.meta?.target).includes('barcode')) {
+        return { success: false, error: "Ya existe un producto con este código de barras" };
+      }
+    }
     return { success: false, error: "Failed to update product" };
   }
 }
