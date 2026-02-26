@@ -56,7 +56,7 @@ export async function createSale(data: {
 }
 
 export async function getSales() {
-  return await prisma.sale.findMany({
+  const sales = await prisma.sale.findMany({
     include: {
       items: {
         include: {
@@ -66,4 +66,19 @@ export async function getSales() {
     },
     orderBy: { createdAt: "desc" },
   });
+
+  return sales.map((s) => ({
+    ...s,
+    total: Number(s.total),
+    items: s.items.map((i) => ({
+      ...i,
+      price: Number(i.price),
+      product: {
+        ...i.product,
+        price: Number(i.product.price),
+        cost: Number(i.product.cost) || 0,
+      },
+    })),
+  }));
 }
+

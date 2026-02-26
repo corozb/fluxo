@@ -40,13 +40,18 @@ export async function deleteCategory(id: string) {
 // --- Products ---
 
 export async function getProducts() {
-  return await prisma.product.findMany({
+  const products = await prisma.product.findMany({
     include: {
       category: true,
       inventory: true,
     },
     orderBy: { name: "asc" },
   });
+  return products.map((p) => ({
+    ...p,
+    price: Number(p.price),
+    cost: Number(p.cost) || 0,
+  }));
 }
 
 export async function createProduct(formData: FormData) {
@@ -80,7 +85,7 @@ export async function createProduct(formData: FormData) {
     });
     revalidatePath("/pos");
     revalidatePath("/inventory");
-    return { success: true, data: product };
+    return { success: true, data: { ...product, price: Number(product.price), cost: Number(product.cost) || 0 } };
 
   } catch (error) {
     console.error("Error creating product:", error);
@@ -119,7 +124,7 @@ export async function updateProduct(id: string, formData: FormData) {
     });
     revalidatePath("/pos");
     revalidatePath("/inventory");
-    return { success: true, data: product };
+    return { success: true, data: { ...product, price: Number(product.price), cost: Number(product.cost) || 0 } };
 
   } catch (error) {
     console.error("Error updating product:", error);
