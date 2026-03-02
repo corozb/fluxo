@@ -1,11 +1,11 @@
-import { usePOSStore } from '@/stores/posStore';
-import { useInventory } from '@/hooks/useInventory';
-import { Card, CardContent } from '@/components/ui/card';
-import { formatNumber } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Plus, AlertTriangle, Barcode } from 'lucide-react';
-import { useMemo } from 'react';
+import { usePOSStore } from "@/stores/posStore";
+import { useInventory } from "@/hooks/useInventory";
+import { Card, CardContent } from "@/components/ui/card";
+import { formatNumber } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Plus, AlertTriangle, Barcode } from "lucide-react";
+import { useMemo } from "react";
 
 export function ProductGrid() {
   const { addToCart, searchQuery, selectedCategory } = usePOSStore();
@@ -55,12 +55,12 @@ export function ProductGrid() {
               <div className="flex items-center space-x-3">
                 {/* Product Icon */}
                 <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center text-2xl text-muted-foreground flex-shrink-0">
-                  {product.category === 'Coffee' && '☕'}
-                  {product.category === 'Pastry' && '🥐'}
-                  {product.category === 'Tea' && '🍵'}
-                  {!['Coffee', 'Pastry', 'Tea'].includes(product.category) && '🍽️'}
+                  {product.category === "Coffee" && "☕"}
+                  {product.category === "Pastry" && "🥐"}
+                  {product.category === "Tea" && "🍵"}
+                  {!["Coffee", "Pastry", "Tea"].includes(product.category) && "🍽️"}
                 </div>
-                
+
                 {/* Product Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between mb-1">
@@ -71,16 +71,12 @@ export function ProductGrid() {
                       <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 ml-1" />
                     )}
                   </div>
-                  
+
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-base font-bold text-primary">
-                      {formatNumber(product.price, '$')}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      Stock: {product.stock}
-                    </span>
+                    <span className="text-base font-bold text-primary">{formatNumber(product.price, "$")}</span>
+                    <span className="text-xs text-muted-foreground">Stock: {product.stock}</span>
                   </div>
-                  
+
                   {product.barcode && (
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Barcode className="h-3 w-3" />
@@ -88,7 +84,7 @@ export function ProductGrid() {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Add Button */}
                 <Button
                   size="sm"
@@ -109,7 +105,7 @@ export function ProductGrid() {
       </div>
 
       {/* Desktop Grid Layout */}
-      <div className="hidden sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {filteredProducts.map((product) => (
           <Card
             key={product.id}
@@ -118,12 +114,12 @@ export function ProductGrid() {
           >
             <CardContent className="p-4">
               <div className="aspect-square bg-muted rounded-lg mb-3 flex items-center justify-center text-4xl text-muted-foreground">
-                {product.category === 'Coffee' && '☕'}
-                {product.category === 'Pastry' && '🥐'}
-                {product.category === 'Tea' && '🍵'}
-                {!['Coffee', 'Pastry', 'Tea'].includes(product.category) && '🍽️'}
+                {product.category === "Coffee" && "☕"}
+                {product.category === "Pastry" && "🥐"}
+                {product.category === "Tea" && "🍵"}
+                {!["Coffee", "Pastry", "Tea"].includes(product.category) && "🍽️"}
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex items-start justify-between">
                   <h3 className="font-semibold text-base text-card-foreground group-hover:text-primary transition-colors line-clamp-1">
@@ -133,32 +129,28 @@ export function ProductGrid() {
                     <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 ml-1" />
                   )}
                 </div>
-                
+
                 {product.barcode && (
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Barcode className="h-3 w-3" />
                     <span className="truncate">{product.barcode}</span>
                   </div>
                 )}
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-lg font-bold text-primary">
-                      {formatNumber(product.price, '$')}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      Stock: {product.stock}
-                    </span>
+
+                <div className="flex flex-row lg:flex-col xl:flex-row items-center justify-between">
+                  <div className="flex flex-col self-start">
+                    <span className="text-lg font-bold text-primary">{formatNumber(product.price, "$")}</span>
+                    <span className="text-xs text-muted-foreground">Stock: {product.stock}</span>
                   </div>
-                  
-                  <Badge 
+
+                  <Badge
                     variant={product.stock > product.lowStockThreshold ? "secondary" : "destructive"}
-                    className="text-xs"
+                    className="text-xs line-clamp-1 md:mt-0 mt-2 self-end" 
                   >
                     {product.category}
                   </Badge>
                 </div>
-                
+
                 <Button
                   size="sm"
                   variant="pos"
