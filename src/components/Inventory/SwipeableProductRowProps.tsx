@@ -3,7 +3,7 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Edit, Trash2, AlertTriangle } from 'lucide-react';
+import { MoreHorizontal, Edit, Trash2, AlertTriangle, X } from 'lucide-react';
 import { formatNumber } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -38,9 +38,6 @@ export function SwipeableProductRow({ product, onEdit, onDelete, isTabletOrMobil
     ? ((product.price - product.cost) / product.price * 100).toFixed(1)
     : null;
 
-  const SWIPE_THRESHOLD = -80;
-  const DELETE_THRESHOLD = -140;
-
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (!isMobile) return;
     startXRef.current = e.touches[0].clientX;
@@ -61,7 +58,7 @@ export function SwipeableProductRow({ product, onEdit, onDelete, isTabletOrMobil
 
     if (isSwipingRef.current) {
       e.preventDefault();
-      const clampedX = Math.min(0, Math.max(-180, deltaX));
+      const clampedX = Math.min(0, Math.max(-140, deltaX));
       setSwipeX(clampedX);
     }
   }, [isMobile]);
@@ -69,22 +66,16 @@ export function SwipeableProductRow({ product, onEdit, onDelete, isTabletOrMobil
   const handleTouchEnd = useCallback(() => {
     if (!isMobile || !isSwipingRef.current) return;
 
-    if (swipeX <= DELETE_THRESHOLD) {
-      // Animate out and delete
-      setSwipeX(-300);
-      setTimeout(() => {
-        onDelete(product);
-      }, 200);
-    } else if (swipeX <= SWIPE_THRESHOLD) {
-      // Snap to show delete button
-      setSwipeX(SWIPE_THRESHOLD);
+    if (swipeX <= -60) {
+      // Snap to show actions on the right
+      setSwipeX(-140);
     } else {
       // Snap back
       setSwipeX(0);
     }
     setIsSwiping(false);
     isSwipingRef.current = false;
-  }, [isMobile, swipeX, onDelete, product]);
+  }, [isMobile, swipeX]);
 
   const handleRowClick = () => {
     if (isSwipingRef.current || Math.abs(swipeX) > 5) return;
@@ -178,17 +169,34 @@ export function SwipeableProductRow({ product, onEdit, onDelete, isTabletOrMobil
         >
           {swipeX < 0 && (
             <div
-              className="absolute right-0 top-0 flex items-center justify-center bg-destructive text-destructive-foreground z-10"
+              className="absolute right-0 top-0 z-10 overflow-hidden"
               style={{
                 width: `${Math.abs(swipeX)}px`,
-                height: '100%',
-                top: 0,
+                height: rowRef.current?.offsetHeight || 88,
               }}
             >
-              <Trash2 className="h-5 w-5" />
-              {swipeX <= DELETE_THRESHOLD && (
-                <span className="ml-2 text-sm font-medium">Soltar</span>
-              )}
+              <div className="absolute right-0 top-0 flex h-full w-[140px]">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSwipeX(0);
+                  }}
+                  className="flex-1 flex flex-col items-center justify-center bg-secondary text-secondary-foreground cursor-pointer"
+                >
+                  <X className="h-5 w-5" />
+                  <span className="text-xs font-medium mt-1">Cancel</span>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(product);
+                  }}
+                  className="flex-1 flex flex-col items-center justify-center bg-destructive text-destructive-foreground cursor-pointer"
+                >
+                  <Trash2 className="h-5 w-5" />
+                  <span className="text-xs font-medium mt-1">Eliminar</span>
+                </button>
+              </div>
             </div>
           )}
         </td>
