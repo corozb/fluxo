@@ -131,7 +131,7 @@ export function MobileCartContent({ onClose }: MobileCartContentProps) {
         ) : (
           <>
             <ScrollArea className="flex-1 px-4">
-              <div className="space-y-3">
+              <div className="space-y-3 pb-5">
                 {cart.map((item) => (
                   <Card key={item.id} className="bg-muted/50">
                     <CardContent className="p-4">
@@ -340,11 +340,11 @@ export function MobileCartContent({ onClose }: MobileCartContentProps) {
                   onClick={() => handlePayment('transfer')}
                   disabled={isProcessing}
                 >
-                  <DollarSign className="h-5 w-5 mr-2" />
+                  <CreditCard className="h-4 w-4 mr-2" />
                   {isProcessing ? 'Procesando...' : 'Pagar con Transferencia'}
                 </Button>
                 
-                <div className="grid grid-cols-2 gap-2">
+                {/* <div className="grid grid-cols-2 gap-2">
                   <Button
                     variant="outline"
                     className="border-2 h-12"
@@ -364,7 +364,7 @@ export function MobileCartContent({ onClose }: MobileCartContentProps) {
                     <Smartphone className="h-4 w-4 mr-2" />
                     Digital
                   </Button>
-                </div>
+                </div> */}
               </div>
 
               <Button

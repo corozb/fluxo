@@ -109,7 +109,7 @@ export function CartSidebar() {
   };
 
   return (
-    <div className="w-80 glass-panel flex flex-col h-full rounded-r-xl border-t border-b border-white/20">
+    <div className="w-[400px] shrink-0 glass-panel flex flex-col h-full rounded-r-xl border-t border-b border-white/20">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center justify-between">
           <span>Carrito</span>
@@ -129,9 +129,9 @@ export function CartSidebar() {
         ) : (
           <>
             <ScrollArea className="flex-1 -mx-6 px-6">
-              <div className="space-y-3">
+              <div className="space-y-3 pb-3">
                 {cart.map((item) => (
-                  <Card key={item.id} className="bg-muted/50">
+                  <Card key={item.id} className="bg-muted/50 pb-4">
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium text-sm">{item.name}</h4>
@@ -320,7 +320,7 @@ export function CartSidebar() {
               <div className="space-y-2">
                 <Button
                   variant="pos-success"
-                  className="w-full"
+                  className="w-full border-2"
                   onClick={() => handlePayment('cash')}
                   disabled={isProcessing}
                 >
@@ -330,33 +330,34 @@ export function CartSidebar() {
 
                 <Button
                   variant="pos-success"
-                  className="w-full"
+                  className="w-full border-2"
                   onClick={() => handlePayment('transfer')}
                   disabled={isProcessing}
                 >
-                  <DollarSign className="h-4 w-4 mr-2" />
+                 <CreditCard className="h-4 w-4 mr-2" />
                   {isProcessing ? 'Procesando...' : 'Pagar con Transferencia'}
                 </Button>
                 
-                <Button
-                  variant="outline"
-                  className="w-full border-2"
-                  onClick={() => handlePayment('card')}
-                  disabled={isProcessing}
-                >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Pagar con Tarjeta
-                </Button>
                 
-                <Button
-                  variant="outline"
+                {/* <Button
+                  variant="pos-success"
                   className="w-full border-2"
                   onClick={() => handlePayment('digital')}
                   disabled={isProcessing}
                 >
                   <Smartphone className="h-4 w-4 mr-2" />
                   Pago Digital
-                </Button>
+                </Button> */}
+
+                {/* <Button
+                  variant="pos-success"
+                  className="w-full border-2"
+                  onClick={() => handlePayment('transfer')}
+                  disabled={isProcessing}
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  {isProcessing ? 'Procesando...' : 'Pagar con Transferencia'}
+                </Button> */}
               </div>
 
               <Button

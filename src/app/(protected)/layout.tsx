@@ -2,8 +2,9 @@
 
 import { usePOSStore } from "@/stores/posStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function ProtectedLayout({
   children,
@@ -12,20 +13,20 @@ export default function ProtectedLayout({
 }) {
   const router = useRouter();
   const { currentUser } = usePOSStore();
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const { isLoading, user } = useAuth();
 
   useEffect(() => {
-    // Small timeout to allow state hydration if needed, 
-    // but typically usePOSStore with persist middleware hydrates synchronously from localStorage if available
-    if (!currentUser) {
+    if (!isLoading && !user && !currentUser) {
       router.push("/login");
-    } else {
-      setIsAuthorized(true);
     }
-  }, [currentUser, router]);
+  }, [isLoading, user, currentUser, router]);
 
-  if (!isAuthorized) {
-    return null; // Or a loading spinner
+  if (isLoading || (!user && !currentUser)) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background pb-16 lg:pb-0">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return (
